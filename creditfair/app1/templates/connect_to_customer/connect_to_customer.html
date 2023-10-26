@@ -1,0 +1,396 @@
+{% extends 'base.html'  %}
+
+
+{% block content  %}
+{% load static  %}
+
+<style>
+  .ivrs-parent{
+    display: grid;
+    gap: 20px;
+  }
+  .ivrs-first-child{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(209px,1fr));
+    width: calc(100% - 6rem);
+    margin-top: 10px;
+    margin: auto;
+    margin-top: 17px;
+    column-gap: 29px;
+    row-gap: 10px;
+  }
+  .ivr-fil{
+    background: #ffff;
+    height: 160px;
+    border: 1px solid rgba(236, 239, 244, 0.38);
+    box-shadow: 0px 0px 4px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+  }
+  .inner-wrapper{
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-row-gap: 19px;
+    margin-top: 16px;
+  }
+  .inner-div-title{
+    color: rgb(4, 123, 213, 1);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+  .img-title-wrapper{
+    display: grid;
+    grid-template-columns: .1fr 1fr;
+    gap: 13px;
+    margin: auto;
+  }
+  .ivr-sel-wrapper{
+    width: calc(100% - 3em);
+    margin: auto;
+    height: 33px;
+  }
+  .ivr-sel2-wrapper{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: calc(100% - 3em);
+    height: 33px;
+    margin: auto;
+  }
+  .ivrs-second-child{
+    width: calc(100% - 6rem);
+    background: #ffff;
+    border-radius: 10px;
+    height: auto;
+    margin: auto;
+    padding: 20px;
+  }
+  .ivrs-third-child{
+    width: calc(100% - 6rem);
+    margin: auto;
+  }
+  
+  .inner-sec-wrapper{
+    display: grid;
+    width: min(100% - 2em , 600px);
+    margin: auto;
+    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    place-items: center;
+  }
+  .ivr-file{
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(4, 123, 213, 1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ivr-event-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(4, 123, 213, 1);
+    align-items: center;
+
+  }
+  .file-detail{
+    color: black;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 0 10px;
+  }
+  .ivr-btn{
+    background: linear-gradient(90deg, rgba(27, 173, 255, 0.53), rgba(0, 160, 251, 0.97), rgba(20, 162, 255, 1));
+    color: #ffff;
+    border: none;
+    font-size: 12px;
+    border-radius: 10px;
+    width: 80px;
+    height: 36px;
+  }
+  .sel-date{
+    border-radius: 5px;
+    border: 1px solid #D5D4DC;
+    padding: 5px;
+    width: 100%;
+    height: 33px;
+}
+.filter-submit-div{
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      gap: 10px;
+      width: calc(100% - 1em);
+}
+.next-btn{
+      font-size: 12px;
+      color: #ffffff;
+      background-color: #047BD5;
+      padding: 8px;
+      border-radius: 50%;
+    
+    }
+
+    .prev-btn{
+      font-size: 12px;
+      color: #ffffff;
+      background-color: #047BD5;
+      padding: 8px;
+      border-radius: 50%;
+     
+    }
+    .sort-by-wrapper{
+      width: 100%;
+      position: relative;
+    }
+    .filter-by-wrapper .filter-by_icon {
+      top: 11px;
+      right: 12px;
+    }
+    .filter-wrapper-reminder {
+      width: 100%;
+    }
+    .sort-by_icon {
+      position: absolute;
+      z-index: 12;
+      top: 7px;
+    }
+    .customselect {
+      height: 33px;
+    }
+    .multiselect {
+      width: 100%;
+      position: relative;
+    }
+  
+    .visibleloader{
+      display: grid !important;
+    }
+
+    .overlay-wrapper{
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.5);
+    place-items: center;
+    display: none;
+    }
+    
+    .loaderoverlay{
+      position: absolute;
+      width: 100%;
+      place-items: center;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: inherit;
+      display: none;
+      z-index: 99;
+    }
+
+    .custom-loader {
+          width:50px;
+          height:50px;
+          border-radius:50%;
+          border:8px solid;
+          border-color:#E4E4ED;
+          border-right-color: #047BD5;
+          animation:s2 1s infinite linear;
+        }
+        @keyframes s2 {to{transform: rotate(1turn)}}
+
+    
+    .transformCss{
+      transform: scale(1.05);
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+    .onlyRead{
+      pointer-events: none;
+    }
+
+    .pause-btn{
+        background-image: linear-gradient(to right, #e53935 0%, #e35d5b  51%, #e53935  100%);
+    }
+
+    .table-wrapper {
+    height: calc(100vh - 23em);
+    }
+
+    .multiselect {
+    width: 100%;
+    position: relative;
+}
+.overselect {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 34px;
+}
+
+
+    #checkboxes-ivr {
+    /* display: none; */
+    position: absolute;
+    width: 100%;
+    top: 28px;
+    background: #fff;
+    border: 1px #dadada solid;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 5px;
+    max-height: 140px;
+    overflow: auto;
+    z-index: 100;
+}
+ 
+  
+</style>
+<main>
+  <div class="ivrs-parent">
+    <div class="ivrs-first-child">
+      <div class="ivr-upload ivr-fil onlyRead">
+      <div class="overlay-wrapper">
+        <div class="loaderoverlay2">
+          <div class="custom-loader"></div>
+        </div>
+       </div> 
+       <div class="inner-wrapper">
+        <div class="img-title-wrapper">
+          <div><img src="{% static 'images/ivr-upload.png' %}" alt=""></div>
+          <div class="inner-div-title">Select Data (From Upload)</div>
+          </div>
+          <div class="ivr-sel-wrapper"> 
+            <input type="text" class="datepick sel-date" autocomplete="off" name="toFromDate" >
+        </div>
+
+        <div class="filter-submit-div">
+         <!-- <i class="fa-solid fa-angles-right next-btn datacount"></i> -->
+        </div>
+       </div>
+      </div>
+      <div class="ivr-sub ivr-fil onlyRead">
+        <div class="overlay-wrapper">
+          <div class="loaderoverlay2">
+            <div class="custom-loader"></div>
+          </div>
+        </div>
+        <div class="inner-wrapper">
+          <div class="img-title-wrapper">
+            <div><img src="{% static 'images/sel-dispo.png' %}" alt=""></div>
+            <div class="inner-div-title">Select Disposition</div>
+            </div>
+            <div class="ivr-sel-wrapper"> 
+              <div class="filter-wrapper-reminder">
+              <div class="sort-by-wrapper filter-by-wrapper" >
+              <svg class="sort-by_icon filter-by_icon" width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.36402 6.22698L10.0293 1.53086C10.1326 1.3982 10.1793 1.23004 10.159 1.06311C10.1387 0.896181 10.0532 0.744063 9.92111 0.639993C9.81431 0.554117 9.68263 0.505018 9.54568 0.5H0.637036C0.493503 0.500833 0.354467 0.550168 0.242511 0.639993C0.110431 0.744063 0.0249122 0.896181 0.00464239 1.06311C-0.0156274 1.23004 0.0309995 1.3982 0.134335 1.53086L3.81869 6.22698V9.96225C3.80718 10.0585 3.81782 10.1562 3.8498 10.2477C3.88179 10.3392 3.93426 10.4222 4.00323 10.4904L5.27589 11.7631C5.39512 11.8816 5.5564 11.9481 5.72451 11.9481C5.89262 11.9481 6.0539 11.8816 6.17312 11.7631C6.24323 11.6955 6.29689 11.6128 6.32999 11.5212C6.36308 11.4296 6.37473 11.3317 6.36402 11.2349V6.22698ZM7.63668 9.40864L10.8183 12.5903L14 9.40864H7.63668Z" fill="#047BD5"/>
+                </svg>
+              <div class="multiselect">         
+                <div class="selectbox" onclick="showCheckBoxes()">
+                    <select class="customselect">
+                        <option value="">Sub Disposition</option>
+                    </select>
+                    <div class="overselect"></div>
+                </div>
+                <div id="checkboxes-ivr"  class="d-none">
+                  
+                </div>
+              </div>
+              </div>
+             </div> 
+          </div>
+          <div class="filter-submit-div">
+           <!-- <i class="fa-solid fa-angles-left prev-btn datacount"></i>
+           <i class="fa-solid fa-angles-right next-btn datacount"></i> -->
+          </div>
+         </div>
+      </div>
+      <div class="ivr-attmpt ivr-fil onlyRead">
+        <div class="overlay-wrapper">
+          <div class="loaderoverlay2">
+            <div class="custom-loader"></div>
+          </div>
+         </div> 
+        <div class="inner-wrapper">
+          <div class="img-title-wrapper">
+            <div><img src="{% static 'images/atmpt.png' %}" alt=""></div>
+            <div class="inner-div-title">No. of Attempts</div>
+            </div>
+            <div class="ivr-sel2-wrapper"> 
+              <div>
+                <select class="np-select" name="operators"  style="width: 100%;">
+                  <option value="" selected>Operators</option>
+                  <option value="="> =(Equal To)</option>
+                  <option value=">=">>=(Greater Than)</option>
+                  <option value="<="><=(Less Than)</option>
+                </select>
+              </div>
+              <div>
+                <select class="np-select" name="attempts"  style="width: 100%;">
+                  <option value="" selected>Attempts</option>
+                </select>
+              </div>
+          </div>
+          <div class="filter-submit-div">
+           <!-- <i class="fa-solid fa-angles-left prev-btn datacount"></i>
+           <i class="fa-solid fa-angles-right next-btn datacount"></i> -->
+          </div>
+         </div>
+      </div>
+      <div class="ivr-sel ivr-fil onlyRead">
+        <div class="inner-wrapper">
+          <div class="img-title-wrapper">
+            <div><img src="{% static 'images/subway_music.png' %}" alt=""></div>
+            <div class="inner-div-title">Select IVR Files</div>
+            </div>
+            <div class="ivr-sel-wrapper"> 
+              <select class="np-select" name="ivr-file-title" style="width: 100%;">
+                <option value=""> IVR file</option>
+                <option value="1001">Welcome</option>
+                <option value="1002">FeedBack</option>
+              </select>
+          </div>
+          <div class="filter-submit-div">
+           <!-- <i class="fa-solid fa-angles-left prev-btn datacount"></i> -->
+          </div>
+         </div>
+      </div>
+    </div>
+    <div class="ivrs-second-child">
+      <div class="inner-sec-wrapper">
+          <div class="ivr-file">
+           <span>Selected Files : </span> <span class="file-detail IVR-name"></span>
+          </div>
+          <div class="ivr-event-wrapper">
+            <div class="ivr-data-detail"><span class="data-title">Number of Data</span><span class="file-detail data_ct"></span> </div>
+            <div class="ivr-btn-wrapper"><button class="ivr-btn">Start</button></div>
+          </div>
+      </div>
+    </div>
+    <div class="ivrs-third-child">
+      <div class="table-wrapper table-responsive">
+        <table class="table table-borderless  rounded">
+          <thead class="sticky-top">
+            <tr>
+              <th scope="col">List ID</th>
+              <th scope="col">Borrower Name</th>
+              <th scope="col">Phone no.</th>
+              <th scope="col">Agreement No.</th>
+              <th scope="col">Disposition</th>
+              <th scope="col">Sub-Disposition</th>
+              <th scope="col">Attempts</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+          </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+</main>
+
+{% include 'connect_to_customer/connect_ajax.html' %}
+
+{% endblock content  %}

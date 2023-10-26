@@ -1,0 +1,260 @@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+let list_ids=[];
+
+$('.datepick').daterangepicker({
+    singleDatePicker:true,
+    autoApply:true,
+    locale: {
+            format: 'DD-MM-YYYY'
+        }
+});
+
+
+const success_msg =(msg) =>  `<div class="message_wrapper success_usid display-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M6.99992 13.6667C3.31792 13.6667 0.333252 10.682 0.333252 7.00001C0.333252 3.31801 3.31792 0.333344 6.99992 0.333344C10.6819 0.333344 13.6666 3.31801 13.6666 7.00001C13.6666 10.682 10.6819 13.6667 6.99992 13.6667ZM6.22925 9.99001L10.9426 5.27601L9.99992 4.33334L6.22925 8.10468L4.34325 6.21868L3.40058 7.16134L6.22925 9.99001Z" fill="#2BAC47"/>
+                </svg> 
+                <span class="message_text">${msg}</span>
+            </div>`
+
+const error_msg =  (msg) => {  return ` <div class="message_wrapper error_usid display-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M6.99992 13.6666C3.31792 13.6666 0.333252 10.682 0.333252 6.99998C0.333252 3.31798 3.31792 0.333313 6.99992 0.333313C10.6819 0.333313 13.6666 3.31798 13.6666 6.99998C13.6666 10.682 10.6819 13.6666 6.99992 13.6666ZM6.33325 8.99998V10.3333H7.66659V8.99998H6.33325ZM6.33325 3.66665V7.66665H7.66659V3.66665H6.33325Z" fill="#C83532"/>
+                    </svg>
+                    <span class="message_text error_msg">${msg}</span>
+                </div>`}
+
+$('.cal__icon').click(function () {
+    $(this).next().click()
+})
+  
+
+$('.header-title').html("SMS")
+
+$('.upload_file_wrapper').click(function (){
+    $('#fileinput').click()
+})
+
+const dropArea = $("#drop-area");
+
+// prevent default dragover
+dropArea.on("dragover", function(event) {
+    event.preventDefault();
+});
+  
+  // handle drop event
+  dropArea.on("drop", function(event) {
+  event.preventDefault();
+  
+  const files = event.originalEvent.dataTransfer.files;
+      // console.log)
+      var file = files[0];
+  
+      if (file) {
+      if (file.type !== "text/csv") {
+          $('.upload_file_wrapper').addClass('drag_box_error')
+          alert("Only CSV files are allowed.");
+          return;
+      }
+      $('.upload_file_wrapper').removeClass('drag_box_error')
+  
+      // Do something with the file (e.g., read its contents)
+      }
+      $("#fileinput").prop("files", files);
+      $('.drop_text').html(files[0]['name'])
+  });
+  $('#fileinput').change(function(){
+      var file = this.files[0];
+      console.log("asdsd",file['name'])
+  
+      if (file) {
+      if (file.type !== "text/csv") {
+          $('.upload_file_wrapper').addClass('drag_box_error')
+          alert("Only CSV files are allowed.");
+          return;
+      }
+      $('.drop_text').html(file['name'])
+      // Do something with the file (e.g., read its contents)
+      }
+  })
+
+
+const smsupload = async() =>{
+    try{
+        let smsfile = $('input[name=excel_file]')[0].files[0]
+        let smstype=  $("select[name=smstype]").val()
+        const formData = new FormData();
+        formData.append('smsfile', smsfile);
+        formData.append('smstype', smstype);
+
+        const response = await fetch(link +"/smsajax",{
+            method  : "POST",
+            headers :  {
+                "Authorization"  : `Bearer ${token_val}`,
+            },
+            body: formData,
+        })
+
+        const result = await response.json()
+        if(result){
+            if (result.status == 200 ){
+                showToast("Successfully Uploaded",1);
+            }else{
+                showToast("Something wrong in Excel File",0);
+            }
+            $('.loader__wrapper').css({"display":"none"})
+            setTimeout(function(){window.location.reload(1);},3000);
+        }
+    }catch(error){
+        console.log(error)
+    }
+
+}
+
+const check_list_id = async() => {
+    try{
+        const response= await fetch(lik+"/check_sms_id",{
+            method  : "GET",
+            headers :  {
+                "Auhorization" : `Bearer ${token_val}`,
+                "Content-Type" : "application/json"
+            }
+        })
+
+        const result = await response.json()
+        if (result){
+            x= result.list_id
+            for (i of x){
+                list_ids.push(i.listid)
+            }
+        }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+const sms_export = async() => {
+    try{
+        let fd=$("input[name=fdate]").val()
+        let td=$("input[name=todate]").val()
+        const response = await fetch(link+"/sms_export",{
+            method  : "POST",
+            headers : {
+                "Auhorization" : `Bearer ${token_val}`,
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({"fd":fd,"td":td})
+        })
+    }catch(error){
+        console.log(error)
+    }
+}
+  $(document).ready(function(){
+    check_list_id()
+
+    $('input[name="list_name"]').keyup(function(){
+        console.log(this.value.length)
+        if (this.value.length < 6){
+            $(this).addClass('input_failed')
+            $('.error__box2').html(error_msg("Minimum 6 Characters"))
+        }
+        else{
+            $(this).removeClass('input_failed')
+            $(this).addClass('input_success')
+            $('.error__box2').html(success_msg("Success"))
+        }
+    })
+
+
+    $(document).on("key",'input[name="list_id"]',function(){
+        this.value = this.value.replace(/[^\d]/g, "");
+        if (this.value.length < 1){
+            $('.error__box').html(error_msg("Enter List id"))
+            $(this).addClass('input_failed')
+            $(this).removeClass('input_success')
+        }
+        else if (list_ids.includes(this.value)){
+            console.log(this.value,"Asdasd")
+            $('.error__box').html(error_msg("List id already exists"))
+            $(this).addClass('input_failed')
+            $(this).removeClass('input_success')
+        }else{
+            $(this).addClass('input_success')
+            $(this).removeClass('input_failed')
+            $('.error__box').html(success_msg("Success"))
+        }
+    })
+    
+    $(document).on("change","select[name=smstype]",function(){
+        var v=$("select[name=smstype]").val()
+        console.log(v)
+        if ( v == "Payment Acceptance"){
+            console.log("inside")
+            window.location.href = '/media/sms_formats/Payment_Acceptance.csv'
+        }
+        else if( v == "Awareness"){
+            console.log("inside")
+            window.location.href = "/media/sms_formats/Awareness.csv"
+
+        }
+        else if( v == "Payment Confirmation Agency"){
+            console.log("inside")
+            window.location.href = "/media/sms_formats/Payment Confirmation – Agency.csv"
+
+            
+        }
+        else if( v == "CIBIL"){
+            console.log("inside")
+            window.location.href = "/media/sms_formats/CIBIL.csv"
+            
+        }
+        else{
+            $(".downloadbtn").removeAttr("href")
+        }
+    })
+
+
+
+$(document).on("click","#upload_btn",function(){
+         let lid =  $('input[name=list_id]').val().length
+        let lname =  $('input[name=list_name]').val().length
+        let file = $('input[name=excel_file]').val().length
+        
+        if (lid < 1 && lname < 1 && file < 1){
+            $('input[name=list_id]').addClass('input_failed')
+            $('.error__box').html(error_msg("Enter list id"))
+            $('input[name=list_name]').addClass('input_failed')
+            $('.error__box2').html(error_msg("Enter list name"))
+            $('.upload_file_wrapper').addClass('drag_box_error')
+            return
+        }else if(lid < 1){
+            $('input[name=list_id]').addClass('input_failed')
+            $('.error__box').html(error_msg("Enter list id"))
+            return
+        }else if(lname < 1){
+            $('input[name=list_name]').addClass('input_failed')
+            $('.error__box2').html(error_msg("Enter list name"))
+            return
+        
+        }else if(file < 1){
+            $('.upload_file_wrapper').addClass('drag_box_error')
+            return
+        }
+            
+        $('.upload_file_wrapper').removeClass('drag_box_error')
+        console.log("donee")
+        $("#upload_btn").css({"pointer-events":"none"})
+
+        console.log("start ajax")
+        smsupload()
+    })
+   
+
+  })
+
+  
+  </script>

@@ -1,0 +1,290 @@
+<script>
+  $(document).ready(function () {
+    // -----------Reminder filteration start-------
+
+    dataSubmit();
+
+    $(document).on("click", ".cbk", function () {
+      console.log("callback");
+      $('input[name="filterval"]').val("Call Back");
+      dataSubmit();
+    });
+    $(document).on("click", ".scbk", function () {
+      $('input[name="filterval"]').val("Schedule Call");
+      dataSubmit();
+    });
+    $(document).on("click", ".ptp", function () {
+      $('input[name="filterval"]').val("Promise To Pay");
+      dataSubmit();
+    });
+    $(document).on("click", ".fall", function () {
+      $('input[name="filterval"]').val("");
+      dataSubmit();
+    });
+    
+
+
+   
+
+    const cbkhtml = (id, name, acno, tos, cname, dispo, d,class_tl) => {
+      if (class_tl == 9) {
+        class_tl = "tl_wrapper";
+      }
+      return (component = `<a href="/cms?id=${id}&render=reminder" class="callback-wrapper ${class_tl}">
+    <div class="svg-icon">
+      <img src="/static/images/callback_icon.svg" alt="">
+    </div>
+    <div class="">
+      <div class="data-card-title">Name</div>
+      <div class="data-card-content">${name}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Agreement No.</div>
+      <div class="data-card-content2">${acno}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Loan Amount</div>
+      <div class="data-card-content2">Rs. ${tos}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Disposition</div>
+      <div class="data-card-content2">${dispo}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Reminder Set for</div>
+      <div class="data-card-content2">${d}</div>
+    </div>
+    <div class="user_wrapper ${class_tl}">
+      <div class="data-card-title">Caller ID</div>
+      <div class="data-card-content2">${cname}</div>
+    </div>
+  </a> `);
+    };
+
+    const schhtml = (id, name, acno, tos, cname, dispo, d,class_tl) => {
+      if (class_tl == 9) {
+        class_tl = "tl_wrapper";
+      }
+      return (component = `<a href="/cms?id=${id}&render=reminder" class="callsch-wrapper  ${class_tl}">
+    <div class="svg-icon">
+      <img src="/static/images/callsch_icon.svg" alt="">
+    </div>
+    <div class="">
+      <div class="data-card-title">Name</div>
+      <div class="data-card-content">${name}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Agreement No.</div>
+      <div class="data-card-content2">${acno}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Loan Amount</div>
+      <div class="data-card-content2">Rs. ${tos}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Disposition</div>
+      <div class="data-card-content2">${dispo}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Reminder Set for</div>
+      <div class="data-card-content2">${d}</div>
+    </div>
+    <div class="user_wrapper ${class_tl}">
+      <div class="data-card-title">Caller ID</div>
+      <div class="data-card-content2">${cname}</div>
+    </div>
+  </a> `);
+    };
+
+    const ptphtml = (id, name, acno, tos, cname, dispo, d,class_tl) => {
+      if (class_tl == 9) {
+        class_tl = "tl_wrapper";
+      }
+      return (component = `<a href="/cms?id=${id}&render=reminder" class="ptp-wrapper  ${class_tl}">
+    <div class="svg-icon">
+      <img src="/static/images/ptp_icon.svg" alt="">
+    </div>
+    <div class="">
+      <div class="data-card-title">Name</div>
+      <div class="data-card-content">${name}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Agreement No.</div>
+      <div class="data-card-content2">${acno}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Loan Amount</div>
+      <div class="data-card-content2">Rs. ${tos}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Disposition</div>
+      <div class="data-card-content2">${dispo}</div>
+    </div>
+    <div class="">
+      <div class="data-card-title">Reminder Set for</div>
+      <div class="data-card-content2">${d}</div>
+    </div>
+    <div class="user_wrapper ${class_tl}">
+      <div class="data-card-title">Caller ID</div>
+      <div class="data-card-content2">${cname}</div>
+    </div>
+  </a> `);
+    };
+
+    async function dataSubmit(dispo) {
+      $(".loader__wrapper").css({ display: "block" });
+
+      try {
+        
+        let url = 'http://127.0.0.1:8001/filterrm'
+        let remfilter = $('input[name="filterval"]').val();
+        let tdate = $('input[name="todate"]').val();
+        let fdate = $('input[name="fdate"]').val();
+        let sortby = $(".rm-sortby").val();
+
+        localStorage.setItem("remfilter", $('input[name="filterval"]').val());
+        localStorage.setItem("sort", $(".rm-sortby").val());
+        localStorage.setItem("fdate", $('input[name="fdate"]').val());
+        localStorage.setItem("tdate", $('input[name="todate"]').val());
+
+        const response = await fetch(url, {
+          method: "POST",
+          body: data,
+          headers : {
+            "Authorization": `Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+          },
+          body:JSON.stringify({remfilter:remfilter,tdate:tdate,fdate:fdate,sortby:sortby})
+        });
+
+        if (!response.ok) {
+          throw new Error("Something went wrong!");
+        }
+
+        const response_data = await response.json();
+        console.log(response_data,"wewewe");
+
+        const dataWrapper = $(".main-data-wrapper");
+        dataWrapper.empty();
+
+        for (const i of response_data.data) {
+          const dtFormat = new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: false,
+          });
+          const d = dtFormat.format(new Date(i.callback_datetime));
+
+          const amount = i.main_amount
+            ? parseInt(i.main_amount)
+                .toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "INR",
+                  maximumFractionDigits: 0,
+                })
+                .replace(/₹/gi, "")
+            : "0";
+
+          if (response_data.all_ct == 0) {
+            $("#allct").css({ display: "none" });
+          } else {
+            $("#allct").html(response_data.all_ct);
+            $("#allct").css({ display: "block" });
+          }
+          if (response_data.scbk_ct == 0) {
+            $("#sct").css({ display: "none" });
+          } else {
+            $("#sct").css({ display: "block" });
+            $("#sct").html(response_data.scbk_ct);
+          }
+          if (response_data.ptp_ct == 0) {
+            $("#pct").css({ display: "none" });
+          } else {
+            $("#pct").html(response_data.ptp_ct);
+            $("#pct").css({ display: "block" });
+          }
+          if (response_data.cbk_ct == 0) {
+            $("#cbt").css({ display: "none" });
+          } else {
+            $("#cbt").css({ display: "inline-block" });
+            $("#cbt").html(response_data.cbk_ct);
+          }
+          class_tl = response_data.user_level
+          if (i.sub_disposition == "Call Back") {
+            dataWrapper.append(
+              cbkhtml(
+                i.id,
+                i.name,
+                i.agreement_no,
+                amount,
+                i.caller_name,
+                i.sub_disposition,
+                d,
+                class_tl
+              )
+            );
+          } else if (i.sub_disposition == "Schedule Call") {
+            dataWrapper.append(
+              schhtml(
+                i.id,
+                i.name,
+                i.agreement_no,
+                amount,
+                i.caller_name,
+                i.sub_disposition,
+                d,
+                class_tl
+              )
+            );
+          } else if (i.sub_disposition == "Promise To Pay") {
+            dataWrapper.append(
+              ptphtml(
+                i.id,
+                i.name,
+                i.agreement_no,
+                amount,
+                i.caller_name,
+                i.sub_disposition,
+                d,
+                class_tl
+              )
+            );
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      } finally{
+        $(".loader__wrapper").css({ display: "none" });
+
+      }
+    }
+
+    $('input[name="todate"]').change(function () {
+      dataSubmit();
+    });
+
+    $('input[name="fdate"]').change(function () {
+      dataSubmit();
+    });
+
+    $("input[name=remcb]").click(function () {
+      dataSubmit();
+    });
+
+    $(".rm-sortby").change(function () {
+      console.log("Sorting");
+      dataSubmit();
+    });
+
+    
+
+
+      
+
+    // -----------Reminder filteration end-------
+  });
+</script>

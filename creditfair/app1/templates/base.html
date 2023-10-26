@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKYCRM</title>
+    <!-- /////////////////// favicon icon ////////////////// -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}" type="image/x-icon">
+    <!-- ////////////////////////////// main css link  //////////////////////////////// -->
+    <link rel="stylesheet" href="{% static 'css/style.css'  %}">
+    <!-- //////////////////////////fontawesom link /////////////////////// -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- ///////////////////////////////////select 2 css link////////////////// -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
+    <!-- ///////////////////////bootstrap 5 css link //////////////////////////////// -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ///////////////////////daterangepicker css link //////////////////////////////// -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+    
+    <style>
+      .tri-state-toggle {
+    background: rgba(165,170,174,0.25);
+    box-shadow: inset 0 2px 8px 0 rgba(165,170,174,0.25);
+    border-radius: 24px;
+    display: flex;
+    overflow: hidden;
+    transition: all 500ms ease; 
+}
+
+.tri-state-toggle-button {
+    border-radius: 22px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    background-color: transparent;
+    border: 0px solid transparent;
+    margin: 2px;
+    color: #727C8F;
+    cursor: pointer;
+  
+/*    -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition:    all 0.5s ease-in-out;
+  -ms-transition:     all 0.5s ease-in-out;
+  -o-transition:      all 0.5s ease-in-out; */
+  transition:         all 0.5s ease;
+}
+
+.profile_filter_wrapper{
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+}
+
+.tri-state-toggle-button.active {
+    background-image: linear-gradient(-180deg, #fff 0%, #FAFAFA 81%, #F2F2F2 100%);
+    border: 1px solid rgba(207,207,207,0.6);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1);
+    color: #047BD5;
+    font-weight: 500;
+  transition: all .5s ease-in;
+}
+
+.tri-state-toggle-button:focus {
+  outline: none;
+}
+
+
+
+.calls-queue-wrapper{
+  width: min(100% - 1em, 400px);
+    /* margin: 0 auto; */
+    border-radius: 10px;
+    /* background: rgba(255, 255, 255, 1); */
+    border: 1px solid rgba(236, 236, 236, 1);
+    display: flex;
+    justify-content: space-between;
+    grid-template-columns: 1fr 2fr .5fr;
+    padding: 4px 9px 5px 8px;
+    /* position: absolute; */
+    align-items: center;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    background-color: #fff;
+    z-index: 909909;
+}
+
+.first-queue-wrapper{
+  display: flex;
+    justify-content: space-between;
+    flex: 0 1 75px;
+}
+.queue-img-wrapper{
+    width: 30px;
+}
+
+.queue-img-wrapper img {
+    width: 100%;
+}
+.queue-count{
+  display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(236, 236, 236, 1);
+}
+.queue-info{
+    color: rgba(82, 84, 86, 1);
+    font-size: calc(12px ,14px ,16px);
+    font-weight: 500;
+}
+.queue-cancel-div{
+    width: 30px;
+    height: 26px;
+    border-radius: 5px;
+    text-align: center;
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(236, 236, 236, 1);
+}
+.moveFromTop-animation{
+  animation: moveFromTop 1s ease forwards;
+}
+
+.reverse-animation {
+  animation: moveBackToTop 1s ease forwards;
+}
+.hidden {
+  display: none;
+  position: absolute;
+  top: -100px; /* Position above the viewport */
+}
+ 
+@keyframes moveFromTop {
+  from {
+    top: -100px; /* Starting position above the viewport */
+  }
+  to {
+    top: 20px; /* Ending position 50px from the top */
+  }
+}
+
+
+@keyframes moveBackToTop {
+  from {
+    top: 20px;
+  }
+  to {
+    top: -100px;
+  }
+
+}
+
+    </style>
+</head>
+<body>  
+
+
+     <!-- ///////////////////jquery link////////////////////////// -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <!-- ///////////////////////daterangepicker  link //////////////////////////////// -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <!-- ///////////////////select 2 js link//////////////////////// -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" ></script>
+    {% include 'loader_animation.html'  %}
+    
+    {% include 'navbar.html'  %}
+    
+    {% include 'base_ajax.html'  %}
+
+    {% include 'modals.html'  %}
+    <!-- ///////////////////main javascript  link////////////////////////// -->
+    <script src="{% static  'js/main.js'  %}"></script>
+
+
+    
+    <div class="parent-main d-none" style="z-index: 1000;">
+      <div class="timer-main timer-back ">
+      </div>
+      <div class="cloud">
+        <div class="cloud1"></div>
+      </div>
+      <div style="position: absolute;width: 100vw; height: 100%; z-index: 10006; background-color: linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05));"></div>
+      <div style="position: absolute; width: 100vw; height: 100vh; z-index: 10008; padding: 70px 0;">
+        <div class="timer-img-div">
+          <img src="{% static 'images/skywhitelogo.png' %}" style="width: 130px;height: 130px; margin: auto;"  class="mimg" >
+          <img src="{% static 'images/skycmside.png' %}"  style="height: 40px;" alt="">
+        </div>
+      
+        
+        <div class="timer-popup-back">
+          <span class="timer-image"><img src="{%  static 'images/profile.png' %}" alt=""></span>
+          <span></span>
+          <span class="break__type"></span>
+          <div  class="timer">
+            <div class="ongoing-time">
+              <!-- <span id="hour" style="display: none;">00</span><span id="minute">00</span>:<span id="second">00</span><span id="millisecond" style="display: none;">000</span><span>min</span> -->
+              <span id="stopWatch">00 : 00 : 00</span>  
+            </div>
+          
+            <button type="button" name="start" id="start" style="display: none;">start</button>
+            <button type="button" name="pause" class="stop-time" id="stop_time">End Break</button>
+            <button type="button" name="reset" style="display: none;" id="reset">reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="back"></div>
+    
+    <div class="main-contents-card">
+      <div class="top-header">
+        <h4 class="header-title m-0"></h4>
+      <div class="profile_filter_wrapper">
+        <div class="profileimg" style="width: 40px;" >
+          <img src="{% static 'images/profile.png' %}"  class="showpro" style="width: 93%;padding:2px;">
+      <!-- profile pic html start -->
+          <div class="container_pro container__div d-none">
+          <div class="avatar-upload">
+          <div class="avatar-edit">
+              <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" disabled/>
+              <label for="imageUpload"></label>
+          </div>
+          <div class="avatar-preview">
+              <div id="imagePreview" style="background-image: url('/static/images/profile.png');">
+              </div>
+              <!-- <img src="{% static 'images/restic.png' %}" id="imagePreview"> -->
+          </div>
+          </div>
+          <div class="profile-name">
+          <span></span>
+          <span>Extension Number</span>
+          <span></span>
+          <span></span>            <span>Taking a Break ?</span>
+          <span>
+          <select name="selbreak" class="np-select" id="breakdrop">
+            <option value="">select</option>
+            <option value="">select</option>
+            <option value="Tea">Tea</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Office Work">Office Work</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Training">Training</option>
+            <option value="WashRoom">Wash Room</option>
+          </select>
+          </span>
+          </div>
+          </div>
+          <!-- profile pic html end -->
+          
+        </div>
+        <div class="dashboard-filter">
+
+        </div>
+        {% if request.user.user_level == 10 %}
+        <div class="modules_div">
+          <span class="adminone module_active">collection</span>
+          <span class="admintwo">operation</span>
+        </div>
+      {% endif %}
+      
+      </div>
+      </div>
+      
+      {% if request.user.user_level == 1 %}
+        {% include 'component/remindernotifications.html'  %}
+      {% endif %}
+        
+        {% block content %}
+        
+        {% endblock content %}
+
+
+        <div class="calls-queue-wrapper hidden">
+          <div class="first-queue-wrapper">
+              <div class="queue-img-wrapper">
+                  <img src="{% static 'images/queueCall.png' %}" alt="">
+              </div>
+              <div class="queue-count">
+                  
+              </div>
+          </div>
+          <div class="queue-info">
+              Calls in queue
+          </div>
+          <div class="queue-cancel-div" id="cancelButton">
+              <i class="fa-solid fa-xmark"></i>
+          </div>
+      </div>
+    </div>
+    
+    <!-- <div class="main-contents-card">
+      <div class="top-header">
+        <h4 class="header-title m-0"></h4>
+      </div>
+        
+     
+    </div> -->
+      
+      <!-- ///////////////////////////bootstrap 5 bundle cdn//////////////////////// -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+      
+      <script>
+      // toast Notification starts
+
+      const
+        FADE_DUR = 400,
+        MIN_DUR = 600;
+      let toastContain;
+
+      function toast(str, addClass) { 
+        console.log("toast")
+        console.log(str)
+        let duration = Math.max(MIN_DUR, str.length * 80);
+        
+        if (!toastContain) {
+          toastContain = document.createElement('div');
+          toastContain.classList.add('toastContain');
+          document.body.appendChild(toastContain);
+        }
+        
+        const EL = document.createElement('div');
+        EL.classList.add('toast', addClass);
+        EL.innerText = str;
+        toastContain.prepend(EL);
+        
+        setTimeout(() => EL.classList.add('open'));
+        setTimeout(
+          () => EL.classList.remove('open'),
+          duration
+        );
+        setTimeout(
+          () => toastContain.removeChild(EL),
+          duration + FADE_DUR
+        );
+      }
+
+
+
+      // Toast Notification ends
+
+
+
+
+    const cancelButton = document.getElementById('cancelButton');
+    const queueWrapper = document.querySelector('.calls-queue-wrapper');
+
+    // Function to reset the animation state
+    function resetAnimationState() {
+      queueWrapper.classList.remove('moveFromTop-animation', 'reverse-animation');
+      setTimeout(() => {
+        queueWrapper.classList.add('hidden');
+      }, 1000); // Hide the element after 1 second (adjust the timing if needed)
+    }
+
+    cancelButton.addEventListener('click', () => {
+      queueWrapper.classList.add('reverse-animation');
+      queueWrapper.classList.remove('moveFromTop-animation');
+      console.log("It's reversing the animation");
+      resetAnimationState();
+    });
+      </script>
+</html>

@@ -1,0 +1,492 @@
+{% extends 'base.html'  %}
+
+{% block content  %}
+{% load static  %}
+{% csrf_token  %}
+
+<style>
+.select2-container--default .select2-selection--single {
+    background-color: #fff;
+    border: 1px solid #E0E0E0;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+  color: #047BD5;
+  font-size: 11px;
+}
+.select2-selection__rendered {
+    line-height: 27px !important;
+}
+.select2-container .select2-selection--single {
+    height: 30px !important;
+}
+.select2-selection__arrow {
+    height: 29px !important;
+}
+
+.dispo__.invalid_field .select2-container--default .select2-selection--single{
+  border-color: red;
+}
+.sub__dispo.invalid_field .select2-container--default .select2-selection--single{
+  border-color: red;
+}
+
+
+/* miss call  start */
+
+.misscall-wrapper{
+  width: min(49%);
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns:.5fr 1fr 1fr 1fr;
+  align-items: center;
+  background-color: #fff;
+  padding: 6px 0;
+  min-height: 61px;
+}
+
+.misscall-wrapper .svg-icon{
+  text-align: center;
+}
+
+.data-card-content.missno {
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.data-card-content.missdate {
+  font-weight: 500;
+  font-size: 12px;
+  color: #B7B7B7;
+  font-size: 12px;
+}
+
+.data-card-content2.missdispo {
+  color: #EA0000;
+}
+
+.data-card-content2.missdispo.g{
+  color: #00B84A;
+}
+.data-card-content2.missdispo.n{
+  color: #047BD5;
+}
+.ct{
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 12px;
+    color: #DC143C;
+  }
+
+/* misscall-wrapper end */
+
+@media screen and (max-width: 990px) {
+  .misscall-wrapper{
+    width: 100% !important;
+  }
+}
+</style>
+
+<main class="main-reminder main-ots">
+  <div class="parent-filter-wrapper">
+    <div class="first-child-parent-filter">
+      <div class="filter-wrapper-reminder">
+        <p class="m-0">From</p>
+        <div class="date-wrapper">
+          <svg class="cal__icon" width="18" height="13" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9V11H4V9H6ZM10 9V11H8V9H10ZM14 9V11H12V9H14ZM16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C0.89 20 0 19.1 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H3V0H5V2H13V0H15V2H16ZM16 18V7H2V18H16ZM6 13V15H4V13H6ZM10 13V15H8V13H10ZM14 13V15H12V13H14Z" fill="#575757"/>
+          </svg>
+          <input type="text" class="datepick" name="fdate" autocomplete="off">
+        </div>
+      </div>
+      <div class="filter-wrapper-reminder" >
+        <p class="m-0">To</p>
+        <div class="date-wrapper">
+          <svg class="cal__icon" width="18" height="13" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9V11H4V9H6ZM10 9V11H8V9H10ZM14 9V11H12V9H14ZM16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C0.89 20 0 19.1 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H3V0H5V2H13V0H15V2H16ZM16 18V7H2V18H16ZM6 13V15H4V13H6ZM10 13V15H8V13H10ZM14 13V15H12V13H14Z" fill="#575757"/>
+          </svg>
+          <input type="text" class="datepick" name="todate" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <div class="second-child-parent-filter">
+      <p class="m-0">Sort By</p>
+      <select  class="np-select" name="date_fil">
+        <option value="All" selected disabled>select</option>
+        <option value="Ascending">Ascending</option>
+        <option value="Descending">Descending</option>
+      </select>
+    </div>
+  </div>
+
+
+  <section class="filter-slider-section">
+    <div class="menu">
+      <div class="menu__indicator"></div>
+      <div class="menu-line__indicator"></div>
+      <ul class="menu__list">
+        <li class="menu__item">
+          <a class="menu__link all-link"  href="#" style="position: relative;">All</a>
+          <span class="ct" id="all_ct" style="position: absolute;top: 0px;
+          left: 30px;"></span>
+        </li>
+        <li class="menu__item">
+          <a class="menu__link  miss-link" id="fall"  href="#" style="position: relative;">Missed calls</a>
+          <span class="ct" id="miss_ct" style="position: absolute;top: 0px;
+          left: 146px;"></span>
+        </li>
+          <li class="menu__item">
+            <a class="menu__link  notcon-link" id="fall"  href="#" style="position: relative;" >Not Connected Missed calls</a>
+            <span class="ct" id="notc_ct" style="position: absolute;top: 0px;
+            left: 353px;"></span>
+          </li>
+        <li class="menu__item">
+          <a class="menu__link completed-link" href="#" style="position: relative;">Completed Missed Calls</a>
+          <span class="ct" id="com_ct" style="position: absolute;top: 0px;
+          left: 533px;"></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+  <section class="data-render-section">
+    <div class="main-data-wrapper" >
+      
+    </div>
+  </section>  
+</main>
+
+<script>
+  
+
+    $('.datepick').daterangepicker({
+      singleDatePicker:true,
+      autoApply:true,
+      locale: {
+        format: 'DD-MM-YYYY'
+      }
+    });
+
+
+  const menu = document.querySelector('.menu');
+  const menuindicator = document.querySelector('.menu__indicator');
+  
+  function updateIndicator(linkElem) {
+    menu.style.setProperty('--indicator-left', `${linkElem.offsetLeft}px`);
+    menu.style.setProperty('--indicator-width', `${linkElem.offsetWidth}px`);
+  }
+  
+  function resetIndicator() {
+    menu.style.setProperty('--indicator-left', 0);
+    menu.style.setProperty('--indicator-width', 0);  
+  }
+
+
+  
+  menu.addEventListener('click', function(evt) {
+    const link = evt.target.closest('.menu__link');
+    evt.target.classList.add("ac1");
+    
+    if (link) {
+      updateIndicator(link);
+    }
+  });
+  
+  menu.addEventListener('click', function(evt) {
+    evt.target.classList.remove("ac1");
+    evt.target.classList.contains('ac1')?resetIndicator():console.log("asd")
+  });
+
+  
+  function missedhtml(id,num,dt,count){
+    return component = `<a href="#" class="misscall-wrapper">
+      <input name="missedcall_id" type="hidden" value=${id} >
+        <div class="svg-icon">
+          <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_695_44074)">
+              <path d="M5.94249 4.42779C5.56314 4.04604 4.94896 4.04329 4.56684 4.42504C4.1861 4.80541 4.18332 5.42006 4.56267 5.80181L9.25801 10.001C10.1709 10.697 11.3548 10.686 12.2692 9.86736L15.857 6.22904L15.9181 7.40322C15.9431 7.90487 16.3753 8.29213 16.8811 8.26732C17.3869 8.24252 17.7773 7.81391 17.7523 7.31226L17.5884 4.04329C17.5661 3.59677 17.2201 3.23982 16.788 3.18608L13.3072 2.7492C12.8041 2.68581 12.3414 3.03724 12.2775 3.53888C12.2136 4.03777 12.5679 4.4967 13.0737 4.56009L14.5842 4.7489L10.6323 8.49747L5.94249 4.42779Z" fill="#EA0000"/>
+              <path d="M8.28627 16.5669C9.5855 16.1989 10.9209 15.9329 12.3493 15.8943C13.7805 15.853 15.3146 16.0459 17.0071 16.5917C17.1308 16.6316 17.21 16.7102 17.2503 16.808C17.3156 16.9555 17.3364 17.1471 17.3378 17.3607C17.3378 17.5233 17.3086 17.759 17.2711 18.0084C17.1349 18.9979 16.964 20.2231 18.0701 20.6228C18.0951 20.631 18.1159 20.6352 18.141 20.6434L22.0942 21.7005C22.1067 21.7046 22.1234 21.7046 22.1359 21.7087C22.6945 21.8135 23.1822 21.5999 23.5838 21.2099C23.9896 20.8074 24.2953 20.2093 24.4606 19.6098C24.6802 18.8188 24.5885 18.0635 24.3203 17.3538C24.066 16.6771 23.6644 16.0445 23.2378 15.4754C22.5681 14.5823 21.758 13.9249 20.7728 13.4081C19.8098 12.9024 18.6912 12.5427 17.3809 12.2353L17.285 12.2147C16.6819 12.0741 16.0302 11.9239 15.3438 11.8246C12.812 11.4718 9.77309 11.5752 7.0857 12.3414C4.83185 12.9864 2.82395 14.1069 1.57058 15.824C0.884142 16.7667 0.49229 17.8554 0.611791 18.9497C0.714617 19.9061 1.19957 20.8529 2.21255 21.695C2.32788 21.7928 2.48629 21.8259 2.62525 21.7845L6.95647 20.6806C7.49701 20.6104 7.82911 20.3389 8.0028 19.913C8.14315 19.5616 8.15704 19.1206 8.07645 18.6162C8.06394 18.4577 8.03476 18.2799 8.00558 18.0966C7.90553 17.482 7.79854 16.775 8.29461 16.5613L8.28627 16.5669Z" fill="#EA0000"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_695_44074">
+               <rect width="24" height="24" fill="white" transform="translate(0.5 0.5)"/>
+              </clipPath>
+            </defs>
+          </svg>
+            
+        </div>
+        <div class="">
+          <div class="data-card-content mcallme  missno">${num}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content missdate">${dt}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content2  missdispo">${count} Missed calls</div>
+        </div>
+      </a>`
+  }
+
+  function connecthtml(id,num,dt){
+    return component = `<a href="#" class="misscall-wrapper">
+      <input name="missedcall_id" type="hidden" value=${id} >
+        <div class="svg-icon">
+          <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_695_44074)">
+              <path d="M5.94249 4.42779C5.56314 4.04604 4.94896 4.04329 4.56684 4.42504C4.1861 4.80541 4.18332 5.42006 4.56267 5.80181L9.25801 10.001C10.1709 10.697 11.3548 10.686 12.2692 9.86736L15.857 6.22904L15.9181 7.40322C15.9431 7.90487 16.3753 8.29213 16.8811 8.26732C17.3869 8.24252 17.7773 7.81391 17.7523 7.31226L17.5884 4.04329C17.5661 3.59677 17.2201 3.23982 16.788 3.18608L13.3072 2.7492C12.8041 2.68581 12.3414 3.03724 12.2775 3.53888C12.2136 4.03777 12.5679 4.4967 13.0737 4.56009L14.5842 4.7489L10.6323 8.49747L5.94249 4.42779Z" fill="#00B84A"/>
+              <path d="M8.28627 16.5669C9.5855 16.1989 10.9209 15.9329 12.3493 15.8943C13.7805 15.853 15.3146 16.0459 17.0071 16.5917C17.1308 16.6316 17.21 16.7102 17.2503 16.808C17.3156 16.9555 17.3364 17.1471 17.3378 17.3607C17.3378 17.5233 17.3086 17.759 17.2711 18.0084C17.1349 18.9979 16.964 20.2231 18.0701 20.6228C18.0951 20.631 18.1159 20.6352 18.141 20.6434L22.0942 21.7005C22.1067 21.7046 22.1234 21.7046 22.1359 21.7087C22.6945 21.8135 23.1822 21.5999 23.5838 21.2099C23.9896 20.8074 24.2953 20.2093 24.4606 19.6098C24.6802 18.8188 24.5885 18.0635 24.3203 17.3538C24.066 16.6771 23.6644 16.0445 23.2378 15.4754C22.5681 14.5823 21.758 13.9249 20.7728 13.4081C19.8098 12.9024 18.6912 12.5427 17.3809 12.2353L17.285 12.2147C16.6819 12.0741 16.0302 11.9239 15.3438 11.8246C12.812 11.4718 9.77309 11.5752 7.0857 12.3414C4.83185 12.9864 2.82395 14.1069 1.57058 15.824C0.884142 16.7667 0.49229 17.8554 0.611791 18.9497C0.714617 19.9061 1.19957 20.8529 2.21255 21.695C2.32788 21.7928 2.48629 21.8259 2.62525 21.7845L6.95647 20.6806C7.49701 20.6104 7.82911 20.3389 8.0028 19.913C8.14315 19.5616 8.15704 19.1206 8.07645 18.6162C8.06394 18.4577 8.03476 18.2799 8.00558 18.0966C7.90553 17.482 7.79854 16.775 8.29461 16.5613L8.28627 16.5669Z" fill="#00B84A"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_695_44074">
+               <rect width="24" height="24" fill="white" transform="translate(0.5 0.5)"/>
+              </clipPath>
+            </defs>
+          </svg>
+            
+        </div>
+        <div class="">
+          <div class="data-card-content mcallme  missno g">${num}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content missdate ">${dt}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content2  missdispo g">Completed</div>
+        </div>
+      </a>` 
+  }
+
+  function notconnecthtml(id,num,dt){
+    return component = `<a href="#" class="misscall-wrapper">
+      <input name="missedcall_id" type="hidden" value=${id} >
+        <div class="svg-icon">
+          <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_695_44074)">
+              <path d="M5.94249 4.42779C5.56314 4.04604 4.94896 4.04329 4.56684 4.42504C4.1861 4.80541 4.18332 5.42006 4.56267 5.80181L9.25801 10.001C10.1709 10.697 11.3548 10.686 12.2692 9.86736L15.857 6.22904L15.9181 7.40322C15.9431 7.90487 16.3753 8.29213 16.8811 8.26732C17.3869 8.24252 17.7773 7.81391 17.7523 7.31226L17.5884 4.04329C17.5661 3.59677 17.2201 3.23982 16.788 3.18608L13.3072 2.7492C12.8041 2.68581 12.3414 3.03724 12.2775 3.53888C12.2136 4.03777 12.5679 4.4967 13.0737 4.56009L14.5842 4.7489L10.6323 8.49747L5.94249 4.42779Z" fill="#047BD5              "/>
+              <path d="M8.28627 16.5669C9.5855 16.1989 10.9209 15.9329 12.3493 15.8943C13.7805 15.853 15.3146 16.0459 17.0071 16.5917C17.1308 16.6316 17.21 16.7102 17.2503 16.808C17.3156 16.9555 17.3364 17.1471 17.3378 17.3607C17.3378 17.5233 17.3086 17.759 17.2711 18.0084C17.1349 18.9979 16.964 20.2231 18.0701 20.6228C18.0951 20.631 18.1159 20.6352 18.141 20.6434L22.0942 21.7005C22.1067 21.7046 22.1234 21.7046 22.1359 21.7087C22.6945 21.8135 23.1822 21.5999 23.5838 21.2099C23.9896 20.8074 24.2953 20.2093 24.4606 19.6098C24.6802 18.8188 24.5885 18.0635 24.3203 17.3538C24.066 16.6771 23.6644 16.0445 23.2378 15.4754C22.5681 14.5823 21.758 13.9249 20.7728 13.4081C19.8098 12.9024 18.6912 12.5427 17.3809 12.2353L17.285 12.2147C16.6819 12.0741 16.0302 11.9239 15.3438 11.8246C12.812 11.4718 9.77309 11.5752 7.0857 12.3414C4.83185 12.9864 2.82395 14.1069 1.57058 15.824C0.884142 16.7667 0.49229 17.8554 0.611791 18.9497C0.714617 19.9061 1.19957 20.8529 2.21255 21.695C2.32788 21.7928 2.48629 21.8259 2.62525 21.7845L6.95647 20.6806C7.49701 20.6104 7.82911 20.3389 8.0028 19.913C8.14315 19.5616 8.15704 19.1206 8.07645 18.6162C8.06394 18.4577 8.03476 18.2799 8.00558 18.0966C7.90553 17.482 7.79854 16.775 8.29461 16.5613L8.28627 16.5669Z" fill="#047BD5"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_695_44074">
+               <rect width="24" height="24" fill="white" transform="translate(0.5 0.5)"/>
+              </clipPath>
+            </defs>
+          </svg>
+            
+        </div>
+        <div class="">
+          <div class="data-card-content mcallme  missno n">${num}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content missdate ">${dt}</div>
+        </div>
+        <div class="">
+          <div class="data-card-content2  missdispo n">Not Connected</div>
+        </div>
+      </a>`
+  }
+
+
+
+  const miss = async() => {
+    try{
+      let sd=$('input[name=fdate]').val()
+      let ed=$('input[name=todate]').val()
+      let filter = $('.filter_link').val()
+      let date_fil=$('select[name=date_fil] option:selected').val()
+
+      sessionStorage.setItem('msfdate',$('input[name="fdate"]').val())
+      sessionStorage.setItem('mstdate',$('input[name="todate"]').val())
+
+      let response = await fetch(`${link}/missajax`,{
+        method: 'POST',
+        headers : {
+          "Authorization" :`Bearer ${token_val}`,
+          "Content-Type":"application/json",
+        },
+        body : JSON.stringify({"sd":sd,"ed":ed,"filter":filter,"date_fil":date_fil})
+      })
+
+      if (!response.ok){
+        throw new Error("error")
+      }
+      let result = await response.json()
+
+  
+      if (result) {
+        const x = result.miss;
+        const all_ct = result.all_ct;
+        const nc_ct = result.nc_ct;
+        const com_ct = result.com_ct;
+        const m_ct = result.m_ct;
+
+        const mainDataWrapper = $('.main-data-wrapper');
+        mainDataWrapper.html("");
+
+        if (nc_ct === 0) {
+          $("#notc_ct").css("display", "none");
+        } else {
+          $("#notc_ct").html(nc_ct).css("display", "block");
+        }
+
+        if (com_ct === 0) {
+          $("#com_ct").css("display", "none");
+        } else {
+          $("#com_ct").html(com_ct).css("display", "block");
+        }
+
+        if (m_ct === 0) {
+          $("#miss_ct").css("display", "none");
+        } else {
+          $("#miss_ct").html(m_ct).css("display", "block");
+        }
+
+        if (all_ct === 0) {
+          $("#all_ct").css("display", "none");
+        } else {
+          $("#all_ct").html(all_ct);
+        }
+
+        x.forEach((item) => {
+          const dtFormat = new Intl.DateTimeFormat('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false,
+          });
+
+          const d = new Date(item.start);
+          const formattedDate = dtFormat.format(d);
+
+          if (item.status === "No") {
+            mainDataWrapper.append(missedhtml(item.id, item.src, formattedDate, item.count));
+          } else if (item.status !== "Ringing No Response" && item.status.toLowerCase() === "yes") {
+            mainDataWrapper.append(connecthtml(item.id, item.src, formattedDate));
+          } else if (item.status === "Ringing No Response") {
+            console.log("comesssssss");
+            mainDataWrapper.append(notconnecthtml(item.id, item.src, formattedDate));
+          }
+        });
+
+        $('.loader__wrapper').css("display", "none");
+    }
+            
+      
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+        // function for calling on missedcall numbers starts
+    
+const dial_call = async(ph) => {
+  ph=ph.slice(3,)
+  try{
+    let response = await fetch(`${link}/publish`,{
+        method: 'POST',
+        headers : {
+          "Authorization" :`Bearer ${token_val}`,
+          "Content-Type":"application/json",
+        },
+        body : JSON.stringify({"ph":ph})
+      })
+
+  }catch(error){
+    console.log(error)
+  }
+}
+//function for calling on missedcall numbers ends
+
+
+const miss_page = async (ph,id) => {
+      try {
+        let response = await fetch(`${link}/check_missedcall?phone=${ph}&miss_id=${id}`,{
+          method : "GET",
+          headers : {
+          "Authorization" :`Bearer ${token_val}`,
+          "Content-Type":"application/json",
+        },
+        })
+
+        if (!response.ok){
+          throw new Error("Error")
+        }
+
+        let result = await response.json()
+        if(result){
+          let lead_id = result.id
+          let mb = result.ph
+          let miss_id=result.miss_id
+          if (id != undefined){
+              window.location.href=`/inc_cms?id=${lead_id}&bool=True&number=${mb}&miss_id=${miss_id}&render=missedcall`
+            } 
+        }
+      }catch(error){
+        console.log(error)
+      }
+    }
+
+  $(document).ready(function () {
+
+    $('.header-title').html("Missed Calls")
+    
+
+    if (sessionStorage.getItem("msfdate") != null){
+      $('input[name=fdate]').val(sessionStorage.getItem("msfdate"))
+      $('input[name=todate]').val(sessionStorage.getItem("mstdate"))
+    }
+
+
+    $('select[name=subdis]').change(function(){$('.sub__dispo').removeClass('invalid_field')})
+
+    $('select[name=dispo]').change(function(){$('.dispo__').removeClass('invalid_field')})
+
+   
+
+    $('.cal__icon').click(function () {
+      $(this).next().click()
+    })
+
+   
+    
+    
+    $("input[name=fdate]").change(function(){miss()})
+    $("input[name=todate]").change(function(){miss()})
+    
+    $('.all-link').click(function(){
+      $('.filter_link').val("all")
+      miss()
+    })
+    $('.completed-link').click(function(){
+      $('.filter_link').val("completed")
+      miss()
+    })
+    $('.miss-link').click(function(){
+      $('.filter_link').val("no")
+      miss()
+    })
+    $('.notcon-link').click(function(){
+      $('.filter_link').val("rnr")
+      console.log("clickckckckckc notcompleted")
+      miss()
+    })
+
+    $('select[name=date_fil]').change(function(){
+      miss()
+    })
+
+    miss()
+
+  
+    $(document).on("click",".misscall-wrapper",function(){
+      let ph=$(this).find('.missno').html()
+      let miss_id=$(this).find("input[name=missedcall_id]").val()
+      miss_page(ph,miss_id)
+    })
+
+   
+  })  
+  </script>
+
+{% endblock content  %}

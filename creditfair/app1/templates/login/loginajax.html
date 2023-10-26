@@ -1,0 +1,169 @@
+<script>
+    
+    const extension_ls = ['8002',"8006"]
+
+
+    // image slider starts here
+    let imgs = [     
+    "/static/images/1.png",
+    "/static/images/2.png",
+    "/static/images/3.png",
+    "/static/images/4.png",
+    "/static/images/5.png",
+    "/static/images/6.png",
+    "/static/images/7.png",
+    "/static/images/8.png",
+    "/static/images/9.png",
+    "/static/images/10.png",
+    ];
+
+    var i = 0;
+    let isrc = imgs[2];
+    $(".mimg").attr("src", imgs[i]);
+    setInterval(function () {
+        i++;
+        if (i > 10) {i = 0;}
+        $('.mimg').attr("src", imgs[i]);
+    }, 1500);
+
+    // image slider ends here
+
+    const login_user = async(force) => {
+        try {
+            extension = $('input[name=ext_id]').val()
+            username = $('input[name=username]').val()
+            password = $('input[name=password]').val()
+            force = force
+            const response = await fetch('http://127.0.0.1:8001/login_user_ajax',{
+                method: 'POST',  // Change the request method to GET
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body:JSON.stringify({username,extension,password,force})
+            });
+            if (response.ok){
+                const data = await response.json()
+                if (data.status == 500){
+                    $('#login_popup').click()
+                }else if(data.status == 306){
+                    $('#shift_time_popup').click()
+                }else if(data.status == 700){
+                    $('#permission-popup').click()
+                }else if(data.status == 406){
+                    $('.js_danger-popup4 #userwithext').text(data.username)
+                    $('#extpresent-popup').click()
+                }
+                if (data.status == 200){
+                    localStorage.setItem('process',$('#process').val())
+                    $('.error_pwd').addClass('display-toggle')
+                    $('.success_pwd').removeClass('display-toggle')
+                    $('input[name=password]').addClass('input_success')
+                    localStorage.setItem('token',data.token)
+                    window.location = "/dashboard"
+                    console.log(data.token,'token')
+                }
+                if(data.status == 400){
+                    pwd_inp = $('input[name=password]').val()
+                    if (pwd_inp.length > 0){
+                        $('.error_pwd').removeClass('display-toggle')
+                        $('.success_pwd').addClass('display-toggle')
+                        $('input[name=password]').addClass('input_failed')
+                    }
+                }
+                if(data.status == 301 && data.status != 400){
+                    $('.error_usid').removeClass('display-toggle')
+                    $('.success_usid').addClass('display-toggle')
+                    $('input[name="username"]').removeClass('input_success')
+                    $('input[name="username"]').addClass('input_failed')
+                }
+                else{
+                    $('.error_usid').addClass('display-toggle')
+                    $('.success_usid').removeClass('display-toggle')
+                    $('input[name="username"]').removeClass('input_failed')
+                    $('input[name="username"]').addClass('input_success')
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+
+$(document).ready(function(){
+      
+    $("#eyechange").click(function(){
+        $(this).toggleClass("fa-eye-slash")
+        attr = $(this).prev().prev().prev().attr('type')
+        attr == "password" ? $(this).prev().prev().prev().attr('type','text') :  $(this).prev().prev().prev().attr('type','password') 
+    })
+
+
+    $('#extension').keyup(function(){
+        let curr_val = this.value
+        console.log(curr_val)
+        if (extension_ls.includes(curr_val)){
+            $(this).addClass('input_success')
+            $('.error_ext').addClass('display-toggle')
+            $('.success_ext').removeClass('display-toggle')
+        }else{
+            $(this).removeClass('input_success')
+            $(this).addClass('input_failed')
+            $('.error_ext').removeClass('display-toggle')
+            $('.success_ext').addClass('display-toggle')
+
+        }
+    })
+
+    $('#login_button').click(function(){
+        let ext = $('#extension')
+        if (ext.val().length <= 0){
+            ext.addClass('input_failed')
+            $('.error_ext').removeClass('display-toggle')
+            $('.success_ext').addClass('display-toggle')
+            return
+        }
+        if (extension_ls.includes(ext.val())){
+            ext.addClass('input_success')
+            $('.error_ext').addClass('display-toggle')
+            $('.success_ext').removeClass('display-toggle')
+        }else{
+            ext.removeClass('input_success')
+            ext.addClass('input_failed')
+            $('.error_ext').removeClass('display-toggle')
+            $('.success_ext').addClass('display-toggle')
+            return
+        }
+        login_user(false)
+        pwd_inp = $('input[name=password]')
+        if (pwd_inp.val().length <= 0){
+            pwd_inp.addClass('input_failed')
+            $('.error_pwd').removeClass('display-toggle')
+            $('.success_pwd').addClass('display-toggle')
+            return
+        }
+    })
+
+    $('input[name=username]').keyup(function(){
+        // if ($(this).val().length > 3 ){
+            login_user(false)
+        // }
+    })
+
+    $('input[name=password]').keyup(function(){
+        if ($(this).val().length <= 0 ){}
+            $('.error_pwd').addClass('display-toggle')
+            $('.success_pwd').addClass('display-toggle')
+            $('input[name=password]').removeClass('input_failed')
+            $('input[name=password]').removeClass('input_success')
+    })
+
+    $(document).on('click',"#force_login",function(){
+        login_user(true)
+    })
+        
+ });
+
+
+   
+</script>

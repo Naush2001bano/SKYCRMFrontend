@@ -1,0 +1,659 @@
+<script>
+      // let link='http://127.0.0.1:8001'
+      // function for 5sec timer starts
+      function fivesec_timer(){
+      // Set the time limit in seconds
+      var timeLimit = 6;
+
+      // Get the timer element
+      var timerElement = document.getElementById("dispose-timer");
+
+      // Start the timer
+      var timer = setInterval(function() {
+        // Decrement the time limit
+        timeLimit--;
+
+        // Check if the time limit has reached zero
+        if (timeLimit == 0) {
+          // Clear the interval and show a message
+          clearInterval(timer);
+          if (!form_submitted){
+            $('#finalsubbtn').click()
+          }
+          form_submitted = true
+        } else {
+          // Show the remaining time
+          timerElement.innerHTML = timeLimit ;
+        }
+      }, 1000); // Update every second (1000 milliseconds)
+    }
+    // function for 5sec timer ends
+    
+  let myInterval
+   const call_response_interval = () => {
+     myInterval = setInterval(function(){
+       callresponse()
+     },1000)
+   } 
+
+   function add_class_ifnot(element,addclass){
+       if (!$(element).hasClass(addclass)) {
+           $(element).addClass(addclass);
+       }
+   }
+
+   let lead_id = $('input[name="lead_id"]').val() //global variable for lead id
+   const render =`{{render}}`
+
+
+
+
+ const dial_call = async () => {
+    var progressive = JSON.parse(localStorage.getItem('progressive'));
+    var super_pro = JSON.parse(localStorage.getItem('super_pro'));
+    var dial_no = $('select[name=select_mobile_no]').val()
+
+    if (progressive == "on" || super_pro == "on" ){
+      dial_no = $('input[name="lastdial"]').val().substring(0,11)
+    }
+    console.log(`${link}/publish`,"LINK")
+    let response = await fetch(`${link}/publish`,{
+      method : "POST",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+        body:JSON.stringify({"dialed_no":dial_no,"lead_id":lead_id})
+    })
+    if (!response.ok){
+      throw new Error("error")
+    }
+    const result = await response.json()
+    if (result){
+      call_response_interval()
+    }
+    
+ }
+ 
+let log_id; 
+ const page_refreshed = async () => {
+    let lead_id = $('input[name="lead_id"]').val()
+    try{
+      let response = await fetch(`${link}/set_pagerefreshed`,{
+        method : "POST",
+        headers : {
+          "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+        body:JSON.stringify({"lead_id":lead_id})
+      })
+
+      let result = await response.json()
+      log_id=result['log_id']
+    }catch(error){
+      console.log(error)
+    }
+ }
+ const del_log_d = async () => {
+  try{
+    let response = await fetch(`${link}/set_pagerefreshed?del_id=${log_id}`,{
+      method : "GET",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+    })
+    let result = await response.json()
+  }catch(error){
+    console.log(error)
+  }
+ }
+ 
+ 
+ let cnt = 0
+const callresponse = async () => {
+    let response= await fetch(`${link}/call_response`,{
+      method : "POST",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+    })
+    try{
+      if (!response.ok){
+          throw new Error("error")
+        }
+        const result = await response.json()
+        console.log(result.response[0].status)
+        let extension_status = result.response[0].status
+        if(extension_status == 'InUse'){
+             $('.ov-text').html("On going call...")
+     
+              
+           if (cnt === 0){update_values("On Call")}
+            cnt++
+          
+             // $('.ov-text').html("On going call...")
+           }else if (extension_status == 'Ringing'){
+             
+             $('.ov-text').html("Ringing...")
+           }else if (extension_status == 'Idle'){
+             // $('.overlay').removeClass('visibility')
+             // $('.Agent').removeClass('notvisible')
+             // $(".callmsg").css({"display":"none"})
+             // $(".main-disposition-boxes").css({"display":"block"})
+             $('.ov-text').html("Call Disconnected...")
+             update_values("waiting")
+       
+             toast('Call disconnected')
+             // $('.sidebar').css({"background":"#047BD5"})
+             // $('.ov-text').html("")
+             // $('.subbtn').css({'pointer-events':""})
+
+             clearInterval(myInterval)
+
+           }
+           
+           else if (extension_status == "Failed"){
+             $('.overlay').removeClass('visibility')
+             $('.Agent').removeClass('notvisible')
+             $(".callmsg").css({"display":"none"})
+             $(".main-disposition-boxes").css({"display":"block"})
+             toast('Can\'t place the call') 
+             $('.sidebar').css({"background":"#047BD5"})
+             
+
+             clearInterval(myInterval)
+           }
+           else{
+      
+           }
+        
+    }catch(error){
+      console.log(error.message)
+ }
+}
+
+
+
+
+ const call_hangup = async () => {
+   let dialed_no = $('select[name=select_mobile_no]').val()
+   console.log("backendddddddddddddddddddddddddddddddddddddd")
+   try{
+    let response =  await fetch(`${link}/hangup`,{
+    method : "POST",
+    headers : {
+          "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+        body:JSON.stringify({"dialed_no":dialed_no,"lead_id":lead_id})
+    })
+    if (!response.ok){
+      throw new Error("error")
+    }
+    const result = await response.json()
+    if (result){
+      $('.subbtn').css({'pointer-events':""})
+    }
+   }catch(error){
+    console.log(error.message)
+   }
+  }
+  
+
+
+   function mode_wrapper_html(){
+       return  `  <div class="amount_div">
+                   <span class="add_detail_title">Enter Amount:</span>
+                   <input type="text" name="paid_amt"  onkeypress="return isNumberKey(event)">
+               </div>
+               <div class="mode_wrapper">
+                   <input type="radio" id="cash"name="mode" value="Cash"/>
+                   <label for="cash">Cash</label>
+                   <input type="radio" id="cheque" name="mode" value="Cheque"/>
+                   <label for="cheque">Cheque No.</label>
+                   <input type="text" class="display-toggle" name="cheque_no" placeholder="Cheque No." >
+                   <input type="radio" id="Online"name="mode" value="Online"/>
+                   <label for="Online">Online Payment</label>
+                   <input type="text"class="display-toggle"  name="online" placeholder="Transaction ID">
+                   <div class="error paid-mode-error" style="display:none">Please Select mode of payment </div>
+               </div>`
+   }
+
+   function ptp_wrapper_html(){
+       return `  <input name="ptp_date"  type="date">
+               <div class="amount_div">
+                   <span class="add_detail_title">Enter Amount:</span>
+                   <input type="text" name="ptp_amount" onkeypress="return isNumberKey(event)">
+               </div>`
+   }
+
+   function ots_wrapper_html(){
+       return `<div class="amount_div">
+                   <span class="add_detail_title">Enter Amount:</span>
+                   <input type="text" name="ots_amount" onkeypress="return isNumberKey(event)">
+               </div>`
+   }
+   
+   function schedule_wrapper_html(){
+       return `<input name="schdatetime"  type="text" class="datepick">
+                <div class="error sch_cbk-error" style="display:none,margin-top:3px">Please Schedule the Call</div>`
+   }
+
+   function lc_wrapper_html(){
+       return ` <input type="radio" id="lc1" name="loan_cancel" value="Service Issue"/>
+                <label for="lc1">Service Issue</label>
+                <input type="radio" id="lc3" name="loan_cancel" value="Death"/>
+                <label for="lc3">Death</label>
+                <input type="radio" id="lc4" name="loan_cancel" value="Fraud"/>
+                <label for="lc4">Fraud</label>
+                <input type="radio" id="lc2" name="loan_cancel" value="Financial/ Job Loss"/>
+                <label for="lc2">Financial/ Job Loss</label>`
+   }
+
+   function callback_wrapper_html(){
+       return ` <input type="radio" id="calltest1" name="callback_time" value="15min"/>
+               <label for="calltest1">15 Min</label>
+               <input type="radio" id="calltest2" name="callback_time" value="30min"/>
+               <label for="calltest2">30 Min</label>
+               <input type="radio" id="calltest3" name="callback_time" value="45min"/>
+               <label for="calltest3">45 Min</label>
+               <input type="radio" id="calltest4" name="callback_time" value="60min"/>
+               <label for="calltest4">60 Min</label>
+               <div class="error callback-error" style="display:none">Please Set Call Back </div>`
+   }
+
+
+   const get_dispositions = async(sub_val) => {
+    console.log("CALL")
+    try {
+      const response = await fetch(`${link}/get_dispositions`,{
+        method:'POST',
+        headers : {
+          "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+        body:JSON.stringify({sub_val:sub_val})
+      });
+      if (!response.ok){
+        throw new Error('error')
+      }
+      const data = await response.json()
+      let x = data.subdisposition
+      console.log(x,'subdispo')
+      $('select[name=subdisposition]').html(`<option value="none" selected disabled>Sub-Dispostition</option>`)
+      for (i in x){
+        $('select[name=subdisposition]').append(`<option value='${x[i].sub_dispo}'>${x[i].sub_dispo}</option>`)
+      }
+
+
+    } catch (error) {
+      console.log(error.message)
+    }
+   }
+
+
+
+
+ const get_dispositions2 = async(sub_val) => {
+  try {
+    const response = await fetch(`${link}/get_dispositions`,{
+      method:'POST',
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({sub_val:sub_val})
+    });
+    if (!response.ok){
+      throw new Error('error')
+    }
+    const data = await response.json()
+    let x = data.sub_disposition
+    let x2 = data.disposition
+    $('select[name=disposition]').html(`<option value="none" selected disabled>Disposition</option>`)
+    $('select[name=subdisposition]').html(`<option value="none" selected disabled>Sub-Dispostition</option>`)
+    for (let i = 0; i < x2.length; i++) {
+      console.log(x2[i].dispo)
+      $('select[name=disposition]').append(`<option value='${x2[i].dispo}'>${x2[i].dispo}</option>`)
+    }
+    
+  } catch (error) {
+    console.log(error)
+  }
+ }
+
+
+
+ 
+ const additional_details_post = async() => {
+  try {
+    url = `${link}/addition_details`;
+    let id = lead_id
+    let contact_no = $('input[name="contact_no"]').val()
+    let wap_no = $('select[name="whatsapp_no"]').val()
+    let wap_no_inp = $('input[name="whatsapp_no_inp"]').val()
+    let relation = $('#relation').val()
+    let address = $('textarea[name="address"]').val()
+    let email = $('input[name="email"]').val()
+    const response = await fetch(url,{
+      method :'POST',
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({id:id,contact_no:contact_no,wap_no:wap_no,wap_no_inp:wap_no_inp,relation:relation,address:address,email:email})
+    });
+    if (!response.ok){
+      throw new Error('error')
+    }
+    additional_details_get()
+    add_class_ifnot('.add_mobile_no','display-toggle')
+    add_class_ifnot('.add_address','display-toggle')
+    add_class_ifnot('.add_email','display-toggle')
+    add_class_ifnot('.add_whatsapp_no','display-toggle')
+    $('select[name="select_mobile_no"]').append(`<option>${contact_no}</option>`)
+    $('input[name="whatsapp_no_inp"]').val("")
+    $('select[name="relation"]').val("")
+    $('select[name="wap_no"]').select2('val','select')
+    $('textarea[name="address"]').val("")
+    $('input[name="email"]').val("")
+    $('input[name="contact_no"]').val("")
+  } catch (error) {
+    console.log(error,'additional_details_post')
+  }
+ }
+
+ const additional_details_get = async() => {
+  try {
+    let id = lead_id
+    const response = await fetch(`${link}/get_additional_info`,{
+      method:'POST',
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({leadid:id})
+    });
+    if (!response.ok){
+      throw new Error('error')
+    }
+    const data = await response.json()
+    console.log(data,'data')
+    let x = data.data
+    $('#contact_div').html("")
+    $('#email_div').html("")
+    $('#whatsapp_div').html("")
+    $('#address_div').html("")
+    for (i in x){
+      console.log(x[i])
+      if (x[i].email){
+          $('#email_div').append(`<span>${x[i].email}</span></br>`)
+      }
+      if (x[i].phone_no){
+          $('#contact_div').append(`<span>${x[i].phone_no}</span></br>`)
+      }
+      if (x[i].whatsapp_no){
+          $('#whatsapp_div').append(`<span>${x[i].whatsapp_no}</span></br>`)
+      }
+      if (x[i].address){
+          $('#address_div').append(`<span>${x[i].address}</span></br>`)
+
+      }
+    }
+  } catch (error) {
+    console.log(error)
+  }
+ }
+
+
+
+ get_additional_numbers = async() => {
+  console.log("Func call")
+  try {
+    id = lead_id;
+    url = `${link}/get_additional_numbers`;
+    const response = await fetch(url,{
+      method : 'POST',
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({leadid:id})
+    })
+    if (!response.ok){
+      throw new Error('error')
+    }
+    const data = await response.json()
+    x=data.data
+    y=data.data2
+    $('select[name=select_mobile_no]').html("")
+    for (i in y){
+      console.log("get_additional_numbers",y[i].mobile_no)
+      y[i].last_dial_no && $('select[name=select_mobile_no]').append(`<option class="${y[i].last_dial_no}">${y[i].last_dial_no}</option>`)
+      y[i].mobile_no && $('select[name=select_mobile_no]').append(`<option class="${y[i].mobile_no}">${y[i].mobile_no}</option>`)
+    }
+    for (i in x){
+      x[i].phone_no && $('select[name=select_mobile_no]').append(`<option class="${x[i].phone_no}">${x[i].phone_no}&nbsp;&nbsp;&nbsp;${x[i].relation}</option>`)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+ }
+
+
+
+ const submit_form = async() => {
+  try {
+    url =`${link}/cms_submit_ajax`
+    console.log(url,"URL")
+    let dispo = $('select[name=disposition]').val()
+    let subdispo = $('select[name=subdisposition]').val()
+    let remark= $('textarea[name=remark]').val()
+
+    let lastdial= $('select[name="select_mobile_no"]').val()
+
+    let ptp_date = $('input[name="ptp_date"]').val()
+    let ptp_amount = $('input[name="ptp_amount"]').val()
+
+    let callback_time = $('input[name="callback_time"]:checked').val()
+    let lc_remark = $('input[name="loan_cancel"]:checked').val()
+
+    let schdatetime = $('input[name="schdatetime"]').val()
+
+    let ots_amount = $('input[name="otsamt"]').val()
+    let tos_per=$("input[name=tospercent]").val()
+
+    let paid_amt = $('input[name="paid_amt"]').val()
+    let mode = $('input[name="mode"]:checked').val()
+    let cheque_no = $('input[name="cheque_no"]').val()
+    let online = $('input[name="online"]').val()
+    let username = '{{username}}' // to get the username on page refereshed
+    if (refresh_confirmation) {
+      remark = `Page Refreshed by ${username} before submitting details`
+      dispo = "Non-Contacted"
+      subdispo = "Page Refreshed"
+    }
+
+    const response = await fetch(url,{
+      method : 'POST',
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({lead_id:lead_id,dispo:dispo,subdispo:subdispo,remark:remark,ptp_date:ptp_date,ptp_amount:ptp_amount,callback_time:callback_time,schdatetime:schdatetime,ots_amount:ots_amount,tos_per:tos_per,paid_amt:paid_amt,mode:mode,cheque_no:cheque_no,online:online,lastdial:lastdial,lc_remark:lc_remark})
+    });
+    if (!response.ok){
+      throw new Error('error')
+    }
+    const data = await response.json()
+    del_log_d()
+    var u_mode=data.u_mode
+    var progressive_ids = JSON.parse(localStorage.getItem('non_attmp_ids'));
+    var progressive = JSON.parse(localStorage.getItem('progressive'));
+    var super_progressive = JSON.parse(localStorage.getItem('super_pro'));
+    const currentUrl = window.location.href;
+    const searchParams = new URLSearchParams(currentUrl.split('?')[1]);
+    redirectValue = searchParams.get('render');
+    let redirect = $('.redirect').val()
+    if (redirectValue == "reminder_push_notification"){
+      window.close()
+      return
+    }
+    console.log(progressive,u_mode,"PRogressiveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",super_progressive)
+    if (!refresh_confirmation){
+      if (progressive == "off" && u_mode!="Progressive"){
+        console.log("all progressive off")
+          window.location.href = `/${redirectValue}`
+          return
+      }
+      console.log(progressive_ids,"listprogress")
+      ls = progressive_ids
+      if (progressive_ids && progressive_ids.length > 0){
+        var index = progressive_ids.indexOf(lead_id);
+        if (index !== -1) {
+          progressive_ids.splice(index, 1);
+        }
+        localStorage.setItem('non_attmp_ids', JSON.stringify(progressive_ids));
+      }
+
+      if (u_mode == "Progressive" && super_progressive=="on"){
+        console.log("check function call")
+        localStorage.setItem('progressive', JSON.stringify("off"))
+        check_available_data(true)
+      }
+
+      progressive_ids = JSON.parse(localStorage.getItem('non_attmp_ids'));
+      console.log(progressive,"statusususprooooooo",lead_id)
+
+      if (progressive == "on" && progressive_ids && progressive_ids[0]){
+        console.log("ready to open new case")
+        window.location.href = `/cms?id=${progressive_ids[0]}&progressive=true&render=${redirectValue}`
+      } else if (progressive == "off" && super_progressive == "off"){
+        if (render){
+          console.log("no option need to return back on previous")
+            window.location.href = `/${redirectValue}`
+            return
+          }
+
+          
+      }
+      else {
+            window.location.href = `/${redirectValue}`
+            return
+          }
+
+    }
+    // queue_unpaused() //need to uncomment
+  } catch (error) {
+    console.log(error)
+  }
+ }
+
+ 
+
+ const historyajax = async() => {
+  try {
+    let url = `${link}/customer_history`;
+    let id = lead_id;
+    console.log(id,'id from history api')
+    const response = await fetch(url,{
+      method : "POST",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({leadid:id})
+    })
+    if (!response.ok){
+      throw new Error('error')
+    }
+    const data = await response.json()
+    console.log(data.data.length,'history ajax')
+    x = data.data
+    for (i in x ){
+      un=x[i].Unassigned
+      console.log(un,'un')
+      $('#historyajax').append(`
+      <div class="list_wrapper" style="margin-top:13px">
+    
+        <div style="font-size: 11px; margin-left:5px;margin-right:3px;text-align: center;">${x[i].contacted_dt}</div>
+    
+        <div class="historycontent" style="margin-top: 5px;">
+          <div id="info" style="margin-top: 0px;">Agent Name</div>
+          <div class="data" style="margin-top: 0px;margin-left: 7px;">
+            
+            <div><i class="fa-solid fa-phone-volume" style="font-size: 12px;color:  #047BD5; margin-right: 9px;"></i>${un?x[i].attempted_by:x[i].caller_name}</div>
+          </div>
+          <div id="info" style="margin-top: 2px;">Sub dispostion</div>
+          <div class="data" style="margin-top: 2px;margin-left: 3px;">
+            <div>${x[i].sub_disposition}</div>
+          </div>
+
+          <div id="info" style="margin-top: 1px;">Remark</div>
+          <div class="historyremark">
+            ${x[i].remark}
+          </div>
+        </div>
+
+      </div>
+      `)
+    }
+    callpage()
+  } catch (error) {
+    console.log(error)
+  }
+ }
+ 
+ function callpage(){
+   var items = $(".list_wrapper");
+   var numItems = items.length;
+   var perPage = 1;
+
+   items.slice(perPage).hide();
+
+   $('#pagination-container').pagination({
+       items: numItems,
+       itemsOnPage: perPage,
+       prevText: "&laquo;",
+       nextText: "&raquo;",
+       onPageClick: function (pageNumber) {
+           var showFrom = perPage * (pageNumber - 1);
+           var showTo = showFrom + perPage;
+           items.hide().slice(showFrom, showTo).show();
+       }
+   });
+
+   }
+
+
+
+const update_values = async (status,callCount,avgTimeStr,mode) => {
+  var progressive = JSON.parse(localStorage.getItem('progressive'));
+   var super_pro = JSON.parse(localStorage.getItem('super_pro'));
+   if (progressive == "on" || super_pro == "on"){
+       mode="Progressive"
+     }
+     else{
+       mode="Manual"
+     }
+     try{
+      let response = await fetch (`${link}/cmsstrartstop`,{
+      method : "POST",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+          "Content-Type" : "application/json",
+        },
+        body:JSON.stringify({"callCount":callCount,"status":status,"avgTimeStr":avgTimeStr,"mode":mode})
+    })
+    let result = await response.json()
+    console.log(result)
+
+     }catch(error){
+      console.log(error)
+     }
+}
+
+
+</script>

@@ -1,0 +1,432 @@
+<script>
+    let chart1;
+    let mychart2;
+
+
+const totalcalls = async (id) => {
+    try {
+        let url = `http://127.0.0.1:8001/totalcalls`;
+        let time = id;
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+            },
+            body:JSON.stringify({'time':time})
+        })
+        if (!response.ok){
+            throw new Error('something went wrong')
+        }
+        data = await response.json()
+        // console.log("todays",data.upload,"avail",data.available,"contacted",data.contacted,"noncontacted",data.noncontacted,"all values")
+        $("#up_val").html(data.upload)
+        $("#avail_val").html(data.available)
+        $("#con_val").html(data.contacted)
+        $("#noncon_val").html(data.noncontacted)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//Agent avaialable 
+
+const agent_available = async(id) => {
+    try {
+        let url = `http://127.0.0.1:8001/agent_available`;
+        let time = id;
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+            },
+            body:JSON.stringify({'time':time})
+        })
+        if (!response.ok){
+            throw new Error('Something went wrong')
+        }
+        data = await response.json()
+        $("#total_agn").html(data.total_agent)
+        $("#login_agn").html(data.logged_in_agent)
+        $("#on_call").html(data.on_call)
+        $("#on_paused").html(data.on_paused)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+//Top Five Dispositions
+
+// Function to initialize easyPieCharts
+function initEasyPieChart(selector, trackColor, barColor) {
+    $(selector).each(function() {
+        var color = $(this).data('color');
+        $(this).easyPieChart({
+            scaleLength: 0,
+            size: 75,
+            lineWidth: 4,
+            trackColor: trackColor,
+            lineCap: "circle",
+            animate: 2000,
+            barColor: color
+        });
+    });
+}
+
+
+
+const top5 = async(id) => {
+    try {
+        let url = `http://127.0.0.1:8001/top_five_dispo`
+        let time = id
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+            },
+            body:JSON.stringify({'time':time})
+        })
+        if (!response.ok){
+            throw new Error('something went wrong')
+        }
+        data = await response.json()
+        let x = data.ls
+        console.log(x,'lssss')
+        const values = [];
+        const subDispositions = [];
+        for (let i = 0; i < 5; i++) {
+            try {
+                values[i] = parseInt(x[i]['percent']);
+                subDispositions[i] = x[i]['Sub_disposition'];
+                console.log(values[i], `val${i + 1}`);
+            } catch {
+                values[i] = 0;
+                subDispositions[i] = "Empty";
+            }
+        }
+
+        const [val1, val2, val3, val4, val5] = values;
+        const [sub1, sub2, sub3, sub4, sub5] = subDispositions;
+        const divIds = ['test_div', 'test_div2', 'test_div3', 'test_div4', 'test_div5'];
+        const bgColors = ['#FF0000', '#4339F2', '#34B53A', '#FFB200', '#FE5CEE'];
+        const trackColors = ["#FFE5D3", "#E4E2FF", "#E1FFE3", "#FFF5DD", "#FFECFD"];
+
+        for (let i = 0; i < 5; i++) {
+            const divId = divIds[i];
+            const val = values[i] + '%';
+            const bgColor = bgColors[i];
+            const subDisp = subDispositions[i];
+            const trackColor = trackColors[i];
+
+            $(`#${divId}`).html(`
+                <div class="chart${i + 1} dispo_chart" data-percent="${val}" data-color="${bgColor}">
+                    <span class="innerper" style="background-color:${bgColor};">${val}</span>
+                </div>
+                <span class="top_dispo_div_title">${subDisp}</span>
+            `);
+
+            initEasyPieChart(`.chart${i + 1}`, trackColor, bgColor);
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+///Paid PTP Status
+
+
+const paid_ptp = async(id) => {
+    try {
+        let url = `http://127.0.0.1:8001/paid_ptp_status`;
+        let time = id;
+        const response = await fetch(url,{
+            method:'POST',
+            headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+            },
+            body:JSON.stringify({'time':time})
+        });
+        data = await response.json()
+        if (!response.ok){
+            throw new Error('something went wrong')
+        }
+        console.log(data,"in charts")
+        ctx = document.getElementById('myChart');
+        chart1 = new Chart(ctx, {
+                type: 'doughnut',
+                data:data = {
+                labels: [
+                'Paid',
+                'PTP',
+                // 'Not visited'
+                ],
+                datasets: [{
+                label: '',
+                data: [data.paid,data.ptp],
+                backgroundColor: [
+                    '#FAE154',
+                    '#FF5446',
+                    // 'rgb(54, 162, 235)'
+                ],
+                hoverOffset: 4
+                }]
+            },
+        });
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function call_status(id) {
+    $.ajax({
+        type: "get",
+        url: `/call_status?time=${id}`,
+        success: function (data) {
+            console.log(data["out_calls"],"call counts")
+            const outCalls = [];
+            const inCalls = [];
+            const dropCalls = [];
+
+            for (let i = 0; i < 10; i++) {
+                console.log(data["out_calls"][i],"data from call status")
+                outCalls.push(data["out_calls"][i]);
+                inCalls.push(data["in_calls"][i]);
+                dropCalls.push(data["drop_calls"][i]);
+            }
+            console.log(outCalls,"after loop")
+            const xValues = ["9am", "10 am", "11 am", "12 am", "1 pm", "2 pm", "3 pm", "4 pm", "5 pm", "6 pm", "7 pm"];
+
+            mychart2 = new Chart("myChart2", {
+                type: "line",
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        data: outCalls,
+                        label: 'Outbound',
+                        borderColor: "blue",
+                        fill: false,
+                    }, {
+                        data: inCalls,
+                        label: 'Inbound',
+                        borderColor: "green",
+                        fill: false
+                    }, {
+                        data: dropCalls,
+                        label: 'Drop',
+                        borderColor: "red",
+                        fill: false
+                    }]
+                },
+                options: {
+                    legend: { display: true },
+                }
+            });
+
+           
+        }
+    })
+}
+
+
+
+
+//Overview Details
+
+// overview function starts///////////////////
+
+function overview_details(){
+    console.log("overview")
+    $.ajax({
+        type:"GET",
+        url:`/overview_details`,
+        success:function(data){
+            console.log("overview_details",data.todays_ls,"previous data",data.prev_data_ls)
+           
+         
+            let todaysdatavalues=data.todays_ls
+            $(".todays_val").each(function(index){
+                $(this).html(todaysdatavalues[index])
+            })
+            let prevdatavalues=data.prev_data_ls
+            $(".prev_val").each(function(index){
+                $(this).html(prevdatavalues[index])
+            })
+            
+            let dataValues=data.percetange_ls
+            console.log(dataValues,"perce")
+            $(".progress_item .bar").each(function(index){
+                
+                $(this).attr('data-value', dataValues[index]);
+                $(this).attr('data-text', dataValues[index] + "%");
+                
+            })
+            
+            progress_animation()
+        }
+
+    })
+}
+
+// overview function ends////////////////////
+
+// progress load starts
+function progress_animation(){
+    console.log("animation called")
+    // window.onload = function () {
+        let bar = document.querySelectorAll('.bar');
+        bar.forEach((progress) => {
+            let value = progress.getAttribute('data-value');
+            console.log(value,"in progress animation")
+            progress.style.width = `${value}%`;
+            let count = 0;
+            let progressAnimation = setInterval(() => {
+            count++;
+            progress.setAttribute('data-text', `${count}%`);
+            if (count >= value) {
+                clearInterval(progressAnimation);
+            }
+            }, 15);
+        });
+// };
+
+}
+// progress load ends
+
+
+// /////////////////////Profile change starts////////////////////////////
+
+function profile_ajax(){
+    let data = new FormData()
+
+    data.append('file',$('input[name="change_pro"]')[0].files[0])
+    data.append('name',$('input[name=profile_name]').val())
+
+    $.ajax({
+        method: 'POST',
+        headers: {
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        url: "/eom_profile",
+        data: data,
+        datatype:'json',
+        processData: false,
+        contentType: false,
+       
+        success: function (data) {
+            let x = data.data
+            console.log(x)
+            get_profile()
+        }
+    })
+    
+}
+
+/////Profile change function
+
+function get_profile(){
+        $.ajax({
+            method: 'GET',
+            url: "/eom_profile",
+            datatype:'json',
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log(data)
+                let x = data.data
+                $('.pro_title').removeClass('display-toggle')
+                $(".profile_name_wrapper").addClass('display-toggle')
+
+                console.log(x.length,"asdasdassad")
+
+                if (x.length >0){
+
+                    $('.profile_img').attr('src',`/media/${x[0].profile_img}`)
+                    $('.pro_title').html(x[0].profile_name)
+
+                    console.log($('.pro_title').html(),"add name")
+                }
+
+            }
+        })
+    }
+// /////////////////////Profile change ends////////////////////////////
+$(document).ready(function(){
+   
+   $(".header-title").html("Dashboard")
+   $(".dashboard-filter").html(`<div class="tri-state-toggle">
+       <div class="tri-state-toggle-button" id="today">T</div>
+       <div class="tri-state-toggle-button" id="week">W</div>
+       <div class="tri-state-toggle-button" id="month">M</div>
+       </div>`)
+       
+   $("#today").addClass("active")
+       agent_available("today")
+       totalcalls("today")
+       top5("today")
+    //    call_status("today")
+       paid_ptp("today")
+    //    overview_details()
+
+       get_profile()
+   $('.add_name').click(function(){
+       profile_ajax()
+   })
+ 
+   // ####################Top 5 disposition chart ends ##############################
+
+
+   
+   // ///////////////////////////Profile button events starts///////////////////////////
+       const user_level = `{{request.user.user_level}}`
+   
+       $(".profile_img").click(function(){
+           if(user_level != "9"){return}
+           $("#prof_pic").click()
+       })
+
+       $("#prof_pic").change(function(){
+           if(user_level != "9"){return}
+           $(".profile_img").attr("src",URL.createObjectURL($(this)[0].files[0])) 
+           profile_ajax()
+       })
+
+       $(".pro_title").click(function(){
+           if(user_level != "9"){return}
+           $(this).addClass('display-toggle')
+           $(".profile_name_wrapper").removeClass('display-toggle')
+       })
+   // ///////////////////////////Profile button events ends///////////////////////////
+   
+
+   $(".tri-state-toggle-button").click(function(){
+           $(".tri-state-toggle-button").removeClass("active");
+           var id = $(this).attr('id');
+           $("#" + id).addClass("active");
+           console.log(id)
+           agent_available(id)
+           totalcalls(id)
+           top5(id)
+           if (mychart2) {
+               mychart2.destroy();
+           }
+        //    call_status(id)
+           
+           if (chart1) {
+               chart1.destroy();
+           }
+           paid_ptp(id)
+        //    overview_details()
+
+
+         });
+       
+
+   })
+
+</script>

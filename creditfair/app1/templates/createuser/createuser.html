@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% csrf_token %}
+<link rel="stylesheet" href="{% static 'css/createuser.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<main class="main-wrapper">
+    <input type="text" value="" hidden name="updateuser_id">
+    <section class="adduser-section">
+        <div class="form-wrapper">
+            <div class="content-wrapper" style="position: relative;">
+                <label for="username"><span class="starspan">*</span>Name</label>
+                <input type="text" id="username" name="username_val" placeholder="Enter Name" required>
+                <span class="errorspan" style="position: absolute;"></span>
+            </div>
+            <div class="content-wrapper" style="position: relative;">
+                <label for="userpassword"><span class="starspan">*</span>Password</label>
+                <input type="password" id="userpassword" name="password_val" placeholder="Enter Password" required maxlength="6">
+                <span class="errorspan passerror" style="position: absolute;"></span>
+            </div>
+            <div class="content-wrapper">
+                <div class="span-wrappper">
+                    <span >
+                        <label for="usedatetime"><span class="starspan">*</span>Joining Date</label>
+                        <input  id="usedatetime" name="joindate_val" placeholder="Join Date" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" required style="width: 100%;" >
+                        <span class="errorspan" ></span>
+                    </span>
+                    <!-- <span >
+                        <label for="Process">Process</label>
+                        <select name="process_val" id="Process" class="np-select" required> 
+                            <option value="">Select</option>
+                            <option value="Inbound">Inbound</option>
+                            <option value="Outbound">Outbound</option>
+                        </select>
+                        <span class="errorspan" ></span>
+                    </span> -->
+                </div>
+            </div>
+            <div class="content-wrapper">
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode" name="pincode_val" placeholder="Enter Pincode">
+            </div>
+            <div class="content-wrapper">
+                <label for="area">Area</label>
+                <input type="text" id="area" name="area_val" placeholder="Enter Area">
+            </div>
+            <div class="content-wrapper">
+                <label for="travelby">Travel By</label>
+                <select name="travelby_val" id="travelby" class="np-select">
+                    <option value="">Select</option>
+                    <option value="Walking">Walking</option>
+                    <option value="Public Transport">Public Transport</option>
+                    <option value="Own Vehicle">Own Vehicle</option>
+                </select>
+            </div>
+        </div>
+        <div class="button-wrapper">
+            <button class="create__btn">Create User</button>
+        </div>
+    </section>
+    <section class="viewuser-section">
+        <div class="cu-table-wrapper">
+            <div class="search__bar hideit">
+                <span class="backscreen"><i class="fa-sharp fa-solid fa-arrow-left"></i></span>
+                <input type="text" placeholder="   Search..........." id="search">
+                <span class="searchintable" hidden>
+                    <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+                </span>
+            </div>
+            <div class="header-wrapper">
+                <header>
+                    <span>Name</span>
+                    <span>User Id</span>
+                    <span>Join Date</span>
+                    <span>Area</span>
+                    <span>Pincode</span>
+                    <span>Travel</span>
+                    <span>Password</span>
+                    <span>
+                        <span class="search_span"><i class="fa-solid fa-magnifying-glass" style="color: #047BD5;"></i></span>
+                    </span>
+                </header>
+            </div>
+            <div class="data-wrapper">
+               
+            </div>
+        </div>
+        <!-- hidden popup buttons starts -->
+        <button type="button" class="btn btn-primary open-modal editusermodal"  data-bs-toggle="modal" data-bs-target="#editusermodal"  hidden>
+            Launch demo modal22222
+            </button>
+        <!-- hidden popup buttons ends -->
+    </section>
+</main>
+{% include 'createuser/createuserajax.html' %}
+{% endblock content %}

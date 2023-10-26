@@ -1,0 +1,325 @@
+<script>
+///////////////////////////////////Alll Functions/////////////////////////////////////////
+
+const date_conversion = (d) => {
+    const dateObj = new Date(d);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so we add 1 and pad with '0' if necessary.
+    const day = String(dateObj.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}/${month}/${day}`;
+    return formattedDate
+}
+
+const create_user_data =async () =>{
+    try{
+        const response = await fetch(link+"/create_user_data",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        })
+        const result = await response.json()
+        if (result){
+            console.log(result.data,"getdata")
+        let x= result.data
+        if (x){
+            $(".data-wrapper").html()
+            for (i of x){
+                const formattedDate = date_conversion(i.date_joined)
+                $(".data-wrapper").append(`
+                <div class="datadiv">
+                    <input type="hidden" class="list_id" name="n_id" value="${i.id}" />
+                    <span>${ i.first_name ? i.first_name : ""}</span>
+                    <span>${i.username ? i.username : ""}</span>
+                    <span>${formattedDate ? formattedDate : ""}</span>
+                    <span>${i.area ? i.area : ""}</span>
+                    <span>${i.pincode ? i.pincode : ""}</span>
+                    <span>${i.travelby ? i.travelby : ""}</span>
+                    <span><button class="reset-btn">Reset</button></span>
+                    <span>
+                        <span class="editpen">
+                            <i class="fa-solid fa-pen" style="color: #047BD5;"></i>
+                        </span>
+                        <input type="text" hidden value="${i.id}" class="us_id">
+                        <span>
+                            <span class="form-check form-switch" style="display: inline !important; padding-left: 6px;">
+                                <label class="switch">
+                                    <input type="checkbox" id="flexSwitchCheckDefault" class="toggle_in" ${i.permission === 1 ? 'checked' : ''}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <input type="hidden" class="chk_status" value="${i.id}">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"></label>
+                            </span>
+                        </span>
+                    </span>
+                </div>
+                `)
+            }
+        }
+            
+        }
+        
+        
+    }catch(error){
+        console.log(error)
+    }
+}
+const save_details = async(name,password,joindate,process,area,pincode,travel) => {
+    try{
+        const response = await fetch(link+"/save",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({"name":name,password:password,joindate:joindate,process:process,area:area,pincode:pincode,travel:travel}) 
+    })
+    if(!response.ok){
+        throw new Error("error")
+    }
+    const result= await response.json()
+    if (result){
+        toast(result.msg)
+        window.setTimeout(function(){location.reload()},3000)
+            if(result.status==0){
+            console.log("unable to save form")
+            }
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+// function to create user ends
+
+// function for reset password starts
+
+
+const update_pas = async(id) => {
+    try{
+        const response = await fetch(link+"/update_pas",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({"id":id}) 
+    })
+    if(!response.ok){
+        throw new Error("error")
+    }
+    const result= await response.json()
+    if (result){
+        toast(result.msg)
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+//  function for reset password ends
+
+ // jquery function to get the user details for editing information starts
+
+ 
+const getuser_details = async(id) => {
+    try{
+        const response = await fetch(link+"/getuser_details",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({"id":id}) 
+    })
+    if(!response.ok){
+        throw new Error("error")
+    }
+    const result= await response.json()
+    if (result){
+
+        x = result.data
+        console.log(x,"get data from ")
+        for (i of  x){
+          console.log(i.id,"data in loop")
+          $('input[name=updateuserid]').val(`${i.id}`)
+          $('input[name=editusername_val]').val(`${i.first_name}`)
+          $('input[name=editarea_val]').val(i.area)
+          $('input[name=editpincode_val]').val(i.pincode)
+          var date = new Date(i.date_joined); // Convert the string to a Date object
+          var dateString = date.toISOString().split('T')[0]; // Extract the yyyy-mm-dd portion of the ISO 8601 string
+
+          // var scheduledDate = new Date(selectedDate.setMonth(selectedDate.getMonth() + 1));
+         $('input[name=editjoindate_val]').val(dateString);
+          console.log(i.travelby)
+          p = i.module
+          t = i.travelby
+          console.log(p,'processssssss')
+          console.log(t,'travelby')
+          if (p){
+            $('#editProcess').val(p)
+            $('#editProcess').trigger('change')
+           }
+          if (t){
+            $('#edittravelby').val(t)
+            $('#edittravelby').trigger('change')
+           }
+        }
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+ 
+ // jquery function to get the user details for editing information starts
+
+//  jquery function to update function starts
+
+
+
+const update_user = async(id,name,joindate,process,area,pincode,travel) => {
+    try{
+        const response = await fetch(link+"/update_user",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({"id":id,"name":name,"joindate":joindate,"process":process,"area":area,"pincode":pincode,"travel":travel}) 
+    })
+    if(!response.ok){
+        throw new Error("error")
+    }
+    const result= await response.json()
+    if (result){
+        toast(result.msg)
+        if (result.status == "200" ){
+            window.setTimeout(function(){location.reload()},3000)
+        }
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+
+//  jquery function to update function ends
+
+// toggle status 
+
+
+const showstatus = async(an,lstid) => {
+    try{
+        const response = await fetch(link+"/showstatus",{
+        method : "POST",
+        headers : {
+            "Authorization" : `Bearer ${token_val}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({"an":an,"lstid":lstid }) 
+    })
+    if(!response.ok){
+        throw new Error("error")
+    }
+    const result= await response.json()
+    if (result){
+        toast(result.msg)
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+
+// toggle status ends
+
+
+    $(document).ready(function(){
+        create_user_data()
+        module = `{{request.user.module}}`
+        $(document).on("click",'.editpen',function(){
+            $('.editusermodal').click()
+            let id=$(this).next('.us_id').val()
+            getuser_details(id)
+            $('input[name=updateuser_id]').val(id)
+        })
+        $(document).on("click",'.search_span',function(){
+            $('.search__bar').toggleClass('hideit')
+        })
+        $(document).on("click",'.backscreen',function(){
+            $('.search__bar').addClass('hideit')
+        })
+        $(document).on("click",'.create__btn',function(){
+            $('.adduser-section input[required],.adduser-section select[required]').each(function(){
+                if (!$(this).val()) {
+                    $(this).siblings('.errorspan').text('This field is mandatory').show();
+                } else {
+                    $(this).siblings('.errorspan').hide();
+                }
+            })
+            let name =$("input[name=username_val]").val()
+            let password=$("input[name=password_val]").val()
+            let joindate=$("input[name=joindate_val]").val()
+            let process=$("select[name=process_val]").val()
+            let area=$("input[name=area_val]").val()
+            let pincode=$("input[name=pincode_val]").val()
+            let travel=$("select[name=travelby_val]").val()
+            if (name !="" && password!="" && password.length == 6  && joindate!="" && process!=""){
+                console.log("you click")
+                console.log(name,password,joindate,process,area,pincode,travel)
+                save_details(name,password,joindate,process,area,pincode,travel);
+            }
+        })
+        $(document).on("keyup",'#userpassword',function(){
+            l=$(this).val()
+            if (l.length < 6){
+                $('.passerror').html('')
+                $('.passerror').html('Password length should be 6')
+            }else{
+                $('.passerror').html('')
+            }
+        })
+        $(document).on('click','.reset-btn',function(){
+            console.log('clicked')
+            // id = $("input[name=n_id]").val()
+            id=$(this).parent().parent().find('input[name=n_id]').val()
+            console.log(id,'gsgsgsgsgsgsg')
+            update_pas(id)
+        })
+        $(document).on('click','.edituser_subbtn',function(){
+            let id=$('input[name=updateuserid]').val()
+            let name =$("input[name=editusername_val]").val()
+            let joindate=$("input[name=editjoindate_val]").val()
+            let process=$("select[name=editprocess_val]").val()
+            let area=$("input[name=editarea_val]").val()
+            let pincode=$("input[name=editpincode_val]").val()
+            let travel=$("select[name=edittravelby_val]").val()
+            console.log('input values',name,joindate,process,area,pincode,travel)
+            update_user(id,name,joindate,process,area,pincode,travel)
+        })
+        $(document).on("keyup",'#search',function(){
+            var searchVal = $(this).val().toLowerCase();
+            $('.datadiv').each(function(){
+            var text = $(this).text().toLowerCase();
+            (text.indexOf(searchVal) >= 0) ? $(this).show() : $(this).hide();
+            });
+        });
+        $('.header-title').html('Create User')
+        $(document).on("click",".toggle_in",function(){
+            console.log("hiiiiiiiiiiiiiiiiiiii")
+            var lstid=$(this).parent().next().val()
+            console.log("switch",lstid)
+            if($(this).prop('checked')){
+                console.log('in if')
+                showstatus("1",lstid)
+            }else{
+                console.log('in else')
+                showstatus("0",lstid)
+            }
+
+        })
+    })
+
+</script>

@@ -1,0 +1,187 @@
+<script>
+
+ 
+
+
+    const dropdowndata_quality = async() => {
+      url = `http://127.0.0.1:8001/dropdowndata_quality`
+      try {
+        const response = await fetch (url,{
+          method:"GET",
+          headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+          },
+        })
+        const data = await response.json()
+        x1 = data.subdispo
+        x2 = data.username
+        for (i in x1){
+          $('select[name=dispo]').append(`<option value="${x1[i].sub_dispo}">${x1[i].sub_dispo}</option>`)
+        }
+        for (i in x2){
+          $('select[name=agent]').append(`<option value="${x2[i].username}">${x2[i].username}</option>`)
+        }
+      } catch (error) {
+        console.log(error,'error')
+      }
+    }    
+     
+
+    const qsdata = async() => {
+      try {
+        $('.loader__wrapper').css({ "display": "block" });
+        url = `http://127.0.0.1:8001/qsdata`;
+        let process = $('.process').val();
+        let agn = $('.agn').val();
+        let dispo = $('.dispo').val();
+        let fdate = $('input[name=fdate]').val();
+        let tdate = $('input[name=todate]').val();
+        let phone_no = $('.phone_inp').val();
+        const response = await fetch(url,{
+          method:"POST",
+          headers: {
+              "Authorization": `Bearer ${token_val}`,
+              "Content-Type": "application/json",
+          },
+          body : JSON.stringify({process:process,agn:agn,dispo:dispo,fdate:fdate,tdate:tdate,phone_no:phone_no})
+        })
+        if (!response.ok){
+          throw new Error("Somethong went wrong")
+        }
+        data = await response.json()
+        console.log(data.data)
+        $('tbody').html('');
+        x = data.data
+        const createTableRow = (rowData) => {
+            const {
+              agentname,
+              direction,
+              dst,
+              src,
+              sub_dispos,
+              start,
+              recordfile,
+              id
+            } = rowData;
+
+            const dtFormat = new Intl.DateTimeFormat('en-US', {
+              month: 'short',
+              day: '2-digit',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              second: 'numeric',
+              hour12: false
+            });
+
+            const formattedDate = dtFormat.format(new Date(start));
+
+            return `
+              <tr>
+                <td>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="rec_files" value="${recordfile}" />
+                  </div>
+                </td>
+                <td>${agentname ? agentname : ''}</td>
+                <td>${direction}</td>
+                <td>${direction === "Outbound" ? dst : src}</td>
+                <td>${sub_dispos ? sub_dispos : ''}</td>
+                <td>${formattedDate}</td>
+                <td class="aud">
+                  <img src="/static/Images/pause.png" class="playnow" height="20px" id="playBtn" alt="">
+                  <audio id="audio" class="track1" src="" controls="1" controls="download"></audio>
+                </td>
+                <td>
+                  <a href="#" class="hideme download_arrow" target="_blank" download>
+                    <i class="fa-solid fa-arrow-down" style="color: white;"></i>
+                  </a>
+                  <div class="loader" style="display: none;"></div>
+                </td>
+                <td>
+                  <input type="hidden" class="hidden_id" value=${id}>
+                  <a class="downloadbtn viewbtn">View</a>
+                </td>
+              </tr>
+            `;
+        };
+        $('tbody').html(x.map(createTableRow).join(''));
+        $('.loader__wrapper').css({ "display": "none" });
+      } catch (error) {
+        console.log(error)
+        $('.loader__wrapper').css({ "display": "none" });
+      }
+    }
+
+  const get_urls = () => {
+    $("input[name=rec_link]").val("")
+     let url_ls=[]
+    console.log("Checck box",url_ls)
+    $('input[name=rec_files]:checked').each(function(){
+      let url=$(this).val()
+      if (!url.startsWith("10.128.11.67")) {
+          url = "10.128.11.67" + url.substring(url.indexOf("/"));
+      }
+      if (!url_ls.includes(url)){
+
+        url_ls.push(url);
+      }
+    })
+    console.log("inserted",url_ls)
+    $("input[name=rec_link]").val(url_ls)
+}
+ 
+  $(document).ready(function(){
+    dropdowndata_quality()
+    qsdata() 
+    //////////#  Check box select all #//// //////
+    $("#checkall").click(function(){
+      if ($(this).is(":checked")) {
+      $('input[name="rec_files"]').prop('checked', true);
+      get_urls()
+      }
+      else{
+        $('input[name="rec_files"]').prop('checked', false); 
+      }
+  })
+   //////////#  Check box select all #//// //////
+
+   $(document).on("click","input[name=rec_files]",function(){
+    get_urls()
+  })
+   
+ $(document).on('click','.viewbtn',async function(){
+  try {
+    let id =  $(this).prev().val()
+    let agn = $(this).parent().parent().children().eq(1).html();
+    let phno=$(this).parent().prev().prev().prev().prev().prev().html()
+    let dispo = $(this).parent().prev().prev().prev().prev().prev().prev().html()
+    let sub = $(this).parent().prev().prev().prev().prev().html()
+    let contact = $(this).parent().prev().prev().prev().html()
+    let rec =$(this).parent().parent().find(".aud").children().next().attr("src")
+    let url = `http://127.0.0.1:8001/scoredata`;
+    console.log('scoredata',id,agn,phno,dispo,sub,contact,rec)
+    const response = await fetch(url,{
+      method:"POST",
+      headers: {
+          "Authorization": `Bearer ${token_val}`,
+          "Content-Type": "application/json",
+      },
+      body : JSON.stringify({id:id,agn:agn,phno:phno,dispo:dispo,sub:sub,contact:contact,rec:rec})
+    })
+    if (!response.ok){
+      throw new Error('something went wrong')
+    }
+    data = await response.json()
+    console.log(data.id,'from datastatus')
+    window.location.href=`/score_card/${data.id}`
+  } catch (error) {
+    console.log(error,'error')
+  }
+ })
+ 
+
+ 
+  })
+ </script>

@@ -1,0 +1,1340 @@
+<style>
+  .modal-content.modal_body_contents{
+font-family: "roboto";
+border-radius: 10px;
+padding: 10px;
+}
+
+.dismiss__btn,.Submit__btn{
+border: 0;
+padding: 6px 15px;
+font-size: 12px;
+border-radius: 6px;
+}
+
+.Submit__btn{
+background-color: #1D5CFF;
+color: #fff;
+}
+
+.modal__title{
+text-align: center;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  color: #1D5CFF;
+}
+
+.modal__message{
+font-size: 12px;
+text-align: center;
+margin: 10px 0;
+color: #919191;
+}
+
+.modal-content.modal_body_contents .modal-body{
+font-size: 12px;
+}
+
+.buttons___wrapper{
+display: flex;
+justify-content: center;
+gap: 10px;
+margin-bottom: 13px;
+}
+.popup {
+visibility: hidden;
+transition: visibility 0ms linear 0.3s;
+}
+.popup--visible {
+visibility: visible;
+transition: visibility 0ms;
+}
+.popup__background {
+position: fixed;
+top: 0;
+left: 0;
+z-index: 10000;
+height: 100%;
+width: 100%;
+background: rgba(0, 0, 0, 0.4);
+opacity: 0;
+transition: opacity 0.3s ease-in-out;
+}
+.popup--visible .popup__background {
+opacity: 1;
+}
+.button--success {
+background: #1D5CFF;
+}
+.button--error {
+border: 1px solid #1D5CFF;
+background: #1D5CFF;
+border-radius: 5px;
+}
+
+.btn_disabled,.btn_danger{
+background-color: #ccc;
+border: none;
+}
+.btn_danger{
+background-color: #F33F3F;
+}
+
+
+.popup__content {
+position: fixed;
+top: 50%;
+left: 50%;
+z-index: 10001;
+max-width: 364px;
+width: calc(100% - 2em);
+margin: auto;
+padding: 12px 37px;
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 20px;
+text-align: center;
+-webkit-animation: hide-popup 0.3s forwards;
+animation: hide-popup 0.3s forwards;
+/**
+* Popup types.
+*/
+}
+.popup--visible .popup__content {
+-webkit-animation: show-popup 0.3s forwards;
+      animation: show-popup 0.3s forwards;
+}
+.popup--icon .popup__content {
+padding-top: 97px;
+/**
+* Animations on opened popups.
+*
+* We need to prepend ".popup--visible" with no space to "&" to match the
+* an opened popup: ".popup--visible.popup--icon".
+*
+* Therefore we need the "at-root" function to break out of nesting as well as the
+* "selector-append" function to append parent selectors without space.
+*
+* Details:
+*  - https://css-tricks.com/the-sass-ampersand/
+*  - http://sass-lang.com/documentation/Sass/Script/Functions.html#selector_append-instance_method
+*/
+/**
+* Different popup icon styles
+*
+* E.g. selector for type question: ".popup--icon.-question" to match class="popup--icon -question"
+*
+* To have an easier selector in SCSS we use a little workaround and rearrange the selectors:
+*  ".-question.popup--icon" is also matching class="popup--icon -question"
+*/
+}
+.popup--icon .popup__content:before, .popup--icon .popup__content:after {
+position: absolute;
+top: 30px;
+left: 50%;
+transform: translateX(-50%);
+display: block;
+height: 60px;
+color: white;
+width: 60px;
+}
+.popup--icon .popup__content:before {
+content: "";
+border: 3px solid currentColor;
+border-radius: 50%;
+transform: translateX(-50%) scale(1, 0);
+opacity: 0;
+color: #00A912;
+background: #00A912;
+}
+
+.js_danger-popup.popup--icon .popup__content:before{
+color: #F33F3F;
+background: #F33F3F;
+}
+
+.js_danger-popup.popup--icon .popup__content:after {
+content: "\f00d";
+}
+.js_danger-popup .popup__content__title{
+color: #F33F3F;
+font-family: inherit;
+margin-left: 0;
+}
+
+.popup--icon .popup__content:after{
+content: "\f00c";
+line-height: 62px;
+font-size: 30px;
+font-family: "Font Awesome 5 Free";
+font-weight: 900;
+/* color: #00A912; */
+/* background: #00A912; */
+transform: translateX(-50%) scale(0);
+opacity: 0;
+}
+
+.js_danger-popup .popup__content__title{
+
+}
+.-error.popup--icon .popup__content:before {
+border-color: red;
+}
+.-error.popup--icon .popup__content:after {
+font-family: "Font Awesome 5 Free";
+content: "\f3dd";
+font-weight: 900;
+transform: translateX(-50%) scale(1, 0);
+color: red;
+}
+.-question.popup--icon .popup__content:before {
+border-color: red;
+}
+.-question.popup--icon .popup__content:after {
+content: "\f095";
+color: red;
+font-family: "Font Awesome 6 Free";
+font-weight: 900;
+transform: rotate(136deg);
+font-size: 43px;
+}
+.popup--visible.popup--icon .popup__content:before {
+-webkit-animation: show-icon-cirlce 0.3s forwards 0.15s;
+      animation: show-icon-cirlce 0.3s forwards 0.15s;
+}
+.popup--visible.popup--icon .popup__content:after {
+-webkit-animation: show-icon 0.3s forwards 0.3s;
+      animation: show-icon 0.3s forwards 0.3s;
+}
+.popup__content__title {
+font-size: 20px;
+font-weight: 100;
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 500;
+font-size: 18px;
+color: #00B84A;
+margin-top: 4px;
+}
+.finalmsg {
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #909090;
+  font-weight: 400;
+}
+p button {
+  margin-bottom: 4px;
+  padding: 5px 15px;
+  font-size: 12px;
+  border: 1px solid #75B9E1;
+  border-radius: 3px;
+  background: #4FA0D0;
+  cursor: pointer;
+  font-family: inherit;
+  color: #fff;
+}
+
+.modeselectbox {
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  .RTMpopup {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    width: 50px;
+    height: 53px;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+  }
+  .rtmmain-process {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+  }
+  .rtompopupfont {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+  }
+  .rtmmy-custom-class1 {
+    color: #047BD5;
+    ;
+  }
+  .rtmmy-custom-class2 {
+    color: #047BD5;
+    ;
+  }
+  .rtmmy-custom-class3 {
+    color: #047BD5;
+    ;
+  }
+  .addnAhent {
+    color: black;
+  }
+  .lwbmode {
+    width: 344px;
+    height: 278px;
+    left: 592px;
+  }
+  .lwbdivmain {
+    display: grid;
+    align-items: center;
+    text-align: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-bottom: 38px;
+  }
+  .lwbiconnn {
+    border-radius: 50%;
+    background-color: #047BD5;
+    color: #ffff;
+    height: 50px;
+    width: 50px;
+    margin: auto;
+    padding: 11px;
+  }
+  .popupcancelbtn {
+    width: 257px;
+    height: 37px;
+    background: #047BD5;
+    border: 1px solid #047BD5;
+    border-radius: 4px;
+    color: #ffff;
+}
+  .modedivee {
+    margin-bottom: 23px
+  }
+.lwbdivmain > div:first-child {
+  color: #ABABAB;
+}
+.lwbdivmain > div:last-child {
+  color: #ABABAB;
+}
+.lwbdivmain > div > div {
+  color: black;
+}
+  .lwbdivmain>div>div {
+    color: black;
+  }
+  .modal-content.modal_body_contentss .modal-bodyy {
+    font-family: "roboto";
+    border-radius: 25px;
+    padding: 10px;
+    height: 230px;
+  }
+  .modal-content.modal_body_contentss {
+    font-family: "roboto";
+    border-radius: 25px;
+    padding: 10px;
+  }
+  .modeselectbox {
+    text-align: center;
+    margin-top: 12px;
+  }
+  .LWBbox {
+    text-align: center;
+    margin-top: 18px;
+    font-weight: 500;
+  }
+  .LWBbox a {
+    text-decoration: none;
+  }
+  .mainbox {
+    width: 260px;
+    height: 180px;
+    border: 1px solid #9A9A9A;
+    border-radius: 10px;
+  }
+  .selectrtmwb {
+    font-size: calc(1rem + .6vw);
+    color: black;
+    margin-bottom: 21px;
+  }
+/**
+* Popup animations.
+* Based on Sweet Alert: "https://t4t5.github.io/sweetalert/"
+*/
+@-webkit-keyframes show-popup {
+0% {
+transform: translate(-50%, -50%) scale(0.7);
+opacity: 0;
+}
+45% {
+transform: translate(-50%, -50%) scale(1.05);
+opacity: 1;
+}
+80% {
+transform: translate(-50%, -50%) scale(0.95);
+}
+100% {
+transform: translate(-50%, -50%) scale(1);
+}
+}
+@keyframes show-popup {
+0% {
+transform: translate(-50%, -50%) scale(0.7);
+opacity: 0;
+}
+45% {
+transform: translate(-50%, -50%) scale(1.05);
+opacity: 1;
+}
+80% {
+transform: translate(-50%, -50%) scale(0.95);
+}
+100% {
+transform: translate(-50%, -50%) scale(1);
+}
+}
+@-webkit-keyframes hide-popup {
+0% {
+transform: translate(-50%, -50%) scale(1);
+opacity: 1;
+}
+100% {
+transform: translate(-50%, -50%) scale(0.5);
+opacity: 0;
+}
+}
+@keyframes hide-popup {
+0% {
+transform: translate(-50%, -50%) scale(1);
+opacity: 1;
+}
+100% {
+transform: translate(-50%, -50%) scale(0.5);
+opacity: 0;
+}
+}
+/**
+* Icon animations.
+*/
+@-webkit-keyframes show-icon {
+0% {
+transform: translateX(-50%) scale(0);
+opacity: 0;
+}
+100% {
+transform: translateX(-50%) scale(1);
+opacity: 1;
+}
+}
+@keyframes show-icon {
+0% {
+transform: translateX(-50%) scale(0);
+opacity: 0;
+}
+100% {
+transform: translateX(-50%) scale(1);
+opacity: 1;
+}
+}
+@-webkit-keyframes show-icon-cirlce {
+0% {
+transform: translateX(-50%) scale(1, 0);
+opacity: 0;
+}
+100% {
+transform: translateX(-50%) scale(1, 1);
+opacity: 1;
+}
+}
+@keyframes show-icon-cirlce {
+0% {
+transform: translateX(-50%) scale(1, 0);
+opacity: 0;
+}
+100% {
+transform: translateX(-50%) scale(1, 1);
+opacity: 1;
+}
+}
+
+/* Queue Pop up styling starts */
+
+.queue_no{
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: #939393;
+}
+.modal-details{
+      padding: 0px;
+      width: calc(100% - 2em);
+      margin: 16px auto;
+}
+.queue-title-wrapper{
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 13px;
+}
+
+.queue_no_div{
+  /* height: 28%; */
+  margin: 6px 0;
+}
+
+.queue-info-wrapper{
+    height: 100%;
+    display: grid;
+    gap: 14px;
+}
+label input[type="checkbox"] {
+  display: inline-block;
+  width: 20px; /* Change this to match the width of your checkbox */
+  vertical-align: middle;
+}
+
+label span {
+  display: inline-block;
+  margin-left: 5px; /* Add some space between the checkbox and the span */
+  vertical-align: middle;
+}
+
+
+.queue-close-btn{
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    /* width: 20px; */
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 18px;
+    padding: 3px 5px;
+}
+
+/* Queue Pop up styling ends */
+/* edit user css starts  */
+.modal-details{
+      padding: 0px;
+      width: calc(100% - 2em);
+      margin: 16px auto;
+}
+.edit-title-wrapper{
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 13px;
+}
+
+.edit-info-wrapper{
+    height: 100%;
+    display: grid;
+    gap: 14px;
+}
+
+.edit-title-wrapper > h5{
+  color: #696969;
+}
+
+#editusermodal  > div:first-child{
+  max-width: 100%;
+}
+
+.edit-content-wrapper > div{
+  display: grid;
+  grid-template-columns: .5fr 2fr;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+}
+.edit-content-wrapper label{
+  color: #696969;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.edit-content-wrapper input{
+  background-color: #F3F5F9;
+  color: #A6A1A1;
+  border: 1px solid #A9A6A6;
+  padding: 3px;
+  border-radius: 5px;
+  height: 32px;
+}
+
+.dropdowns__div > div:first-child{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+}
+
+.dropdowns__div input{
+  background-color: #F3F5F9;
+  color: #A6A1A1;
+  border: 1px solid #A9A6A6;
+  padding: 3px;
+  border-radius: 5px;
+  height: 32px;
+}
+
+.dropdowns__div label{
+  color: #696969;
+  font-weight: 500;
+  font-size: 13px;
+  padding-bottom: 5px;
+}
+/* .dropdowns__div{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 5px !important;
+}
+
+.dropdowns__div input{
+  width: 138px !important;
+  height: 30px !important;
+} */
+
+/* edit user css ends */
+
+
+
+/* Qeueu status popup confirmation starts  */
+
+.queue-div{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.queue-marker{
+  text-align: end;
+  font-size: 20px;
+}
+.fa-circle-check{
+  color: #00A912;
+}
+
+.fa-circle-xmark{
+  color:red;
+}
+.queue-btn-wrapper{
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+
+}
+
+.queue-btn-wrapper button{
+  padding: 5px 2px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 11px;
+}
+#Queue_details_modal  .modal-body{
+  padding-bottom:  0 !important;
+}
+.queue-note{
+  text-align: center;
+}
+.queue-note-title{
+  font-weight: 500;
+}
+/* Qeueu status popup confirmation starts  */
+
+
+
+
+.ivr-title{
+    margin: auto;
+    width: calc(100% - 8rem);
+    font-size: 16px;
+    color: rgba(76, 76, 76, 1);
+    font-weight: 600;
+}
+.ivr-body{
+    margin: 20px;
+    font-size: 14px;
+    font-family: "poppins";
+}
+.ivr-file-name{
+  color: rgba(4, 123, 213, 1);
+    font-weight: 700;
+}
+.ivr-btn-wrapper{
+  border: none;
+    display: flex;
+    justify-content: space-around;
+}
+.ivr-yes-btn , .ivr-yes-btn:focus{
+  background: rgba(5, 185, 66, 1);
+}
+.email-yes-btn, .email-yes-btn:focus{
+  background: rgba(5, 185, 66, 1);
+}
+.ivr-no-btn , .ivr-no-btn:focus{
+  background: rgba(255, 39, 39, 1);
+}
+.email-no-btn , .email-no-btn:focus{
+  background: rgba(255, 39, 39, 1);
+}
+.ivr-popup-btn{
+    font-size: 15px;
+    font-family: "poppins";
+    color: white;
+    padding: 4px 22px;
+    border: none;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+    place-items: center;
+}
+.incorrect-sign{
+  color: rgba(255, 39, 39, 1);;
+}
+.correct-sign{
+  color: rgba(5, 185, 66, 1);
+}
+.ivr-correct-span{
+    background: white;
+    padding: -1px;
+    border-radius: 50%;
+    width: 19px;
+    height: 19px;
+    font-size: 11px;
+    place-items: center;
+    display: grid;
+}
+.right-sign{
+  color: rgba(5, 185, 66, 1);
+}
+
+</style>
+
+{% load static  %}
+
+<!-- modal call Successfully connected starts -->
+<button type="button" class="btn btn-primary open-modal"  hidden data-bs-toggle="modal" data-bs-target="#additional_confirm_modal">
+  Launch demo modal
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="additional_confirm_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content modal_body_contents">
+          <!-- <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Mobile Confirmation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div> -->
+          <div class="modal-body">
+            <div class="modal__title">Mobile Confirmation</div>
+            <div class="modal__message">
+              Are you sure you want to add the <span class="mobconfirm"></span> with the ID {{agreement_id}}?
+            </div>
+          </div>
+           <div class="buttons___wrapper"> <button type="button" class="dismiss__btn" data-bs-dismiss="modal">No</button>
+            <button type="submit"  class="Submit__btn" id="submitme" data-bs-dismiss="modal">Yes</button></div>
+          <!-- <div class="modal-footer">
+          </div> -->
+        </div>
+      </div>
+    </div>
+  <!-- modal call Successfully connected ends -->
+  <!-- modal incomming add details starts -->
+<button type="button" class="btn btn-primary detail_conf_btn" data-bs-toggle="modal" data-bs-target="#adddetailsmodal" style="display: none;">
+Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="adddetailsmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal_body_contents">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Mobile Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div> -->
+      <div class="modal-body">
+        <div class="modal__title confirm_for">Details Confirmation</div>
+        <div class="modal__message">
+          Are you sure you want to Change <span class="exsist_field"></span> to <span class="userinput"></span>?
+        </div>
+      </div>
+       <div class="buttons___wrapper"> <button type="button" class="dismiss__btn" data-bs-dismiss="modal">No</button>
+        <button type="button"  class="Submit__btn" id="update_now" data-bs-dismiss="modal">Yes</button></div>
+      <!-- <div class="modal-footer">
+      </div> -->
+    </div>
+  </div>
+</div>
+<!-- modal incomming add details ends -->
+
+<!-- modal for searching the existing customer -->
+<div>
+<div class="modal fade" id="searchcustomer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal_body_contents search_lead_modal">
+
+      <div class="modal-body">
+        <div class="modal__title" style="font-size: 14px; text-align: initial;" > Existing Customer</div>
+        <div style="display: flex;gap: 10px;">
+        <input type="text" id="myInput" class="searchinput" placeholder="search by name/mobile no">
+        <img src="{% static 'images/search_icon2.svg'%}" style="margin-top: 8px;" id="serach__icon2">
+        </div>
+        <div class="table__wrapper">
+            <span>borrower Name</span>
+            <span>Contact no.</span>
+            <span>Loan Account No.</span>
+        </div>
+        <div class="table__data__wrapper">
+        
+        </div>     
+
+      </div>
+
+      <!-- <button class="confirmcon3" id="searchcustomer" type="button" data-bs-toggle="modal" data-bs-target="#searchcustomer"
+        style="display: none;"></button> -->
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<button class="btn btn-primary searchcust" type="button" value="button" hidden data-bs-toggle="modal" data-bs-target="#searchcustomer" id="confirmcon4"></button>
+<!-- modal for searching the existing customer -->
+<!--modal  submit Data successfully starts -->
+<div class="popup popup--icon -success js_success-popup">
+<div class="popup__background"></div>
+<div class="popup__content">
+  <h3 class="popup__content__title">
+  Response Recorded
+  </h1>
+  <p class="finalmsg">Your Disposition & Subdisposition Response has been Recorded Successfully</p>
+  
+  <div class="pro_confirm">
+
+  </div>
+  <p>
+    <button class="button button--success" id="finalsubbtn" type="submit" data-for="js_success-popup">OK  (<span id="dispose-timer">5</span>)</button>
+  </p>
+</div>
+</div>
+<!--modal  submit Data successfully ends -->
+<button class="button button--success bts2" type="button" data-for="js_success-popup" hidden></button>
+
+
+<!--/////////////////////// modal already logged start  /////////////////////////////// -->
+
+<div class="popup popup--icon -success js_danger-popup">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">Already Logged In</h3>
+    <p class="finalmsg">Are you sure do you want to forcefully login?</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <button class="button btn_disabled button--success"  data-for="js_danger-popup">No</button>
+      <button class="button btn_danger button--success" id="force_login" data-for="js_danger-popup">Yes</button>
+    </p>
+  </div>
+</div>
+  <!--modal  submit Data successfully ends -->
+  <button class="button button--success" type="button" id="login_popup" data-for="js_danger-popup" hidden></button>
+
+<!--/////////////////////// modal already logged end /////////////////////////////// -->
+
+
+<!--/////////////////////// modal Shift time start  /////////////////////////////// -->
+
+<div class="popup popup--icon -success js_danger-popup js_danger-popup2">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">You can't Login</h3>
+    <p class="finalmsg">You are trying to login out of shift time, try again later.</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <!-- <button class="button btn_disabled button--success"  data-for="js_danger-popup">No</button> -->
+      <button class="button btn_danger button--success" data-for="js_danger-popup2">OK</button>
+    </p>
+  </div>
+</div>
+  <!--modal  submit Data successfully ends -->
+  <button class="button button--success" type="button" id="shift_time_popup" data-for="js_danger-popup2" hidden></button>
+
+<!--/////////////////////// modal Shift Time end /////////////////////////////// -->
+
+<!--/////////////////////// extension exist popup starts  /////////////////////////////// -->
+
+<div class="popup popup--icon -success js_danger-popup js_danger-popup4">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">You can't Login</h3>
+    <p class="finalmsg">Extension is already in use by <span id="userwithext"></span> .</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <!-- <button class="button btn_disabled button--success"  data-for="js_danger-popup">No</button> -->
+      <button class="button btn_danger button--success" data-for="js_danger-popup4">OK</button>
+    </p>
+  </div>
+</div>
+  <!--modal  submit Data successfully ends -->
+  <button class="button button--success" type="button" id="extpresent-popup" data-for="js_danger-popup4" hidden></button>
+
+<!--/////////////////////// extension popup ends /////////////////////////////// -->
+
+
+<!--/////////////////////// permission popup starts  /////////////////////////////// -->
+
+<div class="popup popup--icon -success js_danger-popup js_danger-popup3">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">You can't Login</h3>
+    <p class="finalmsg">You are not allowed to login contact your supervisor.</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <!-- <button class="button btn_disabled button--success"  data-for="js_danger-popup">No</button> -->
+      <button class="button btn_danger button--success" data-for="js_danger-popup3">OK</button>
+    </p>
+  </div>
+</div>
+  <!--modal  submit Data successfully ends -->
+  <button class="button button--success" type="button" id="permission-popup" data-for="js_danger-popup3" hidden></button>
+
+<!--/////////////////////// permission popup ends /////////////////////////////// -->
+
+
+<!-- ///////////////////////////////////////Queue Login popup starts///////////////////////////////// -->
+
+<button type="button" class="btn btn-primary open-queue-modal"  data-bs-toggle="modal" data-bs-target="#Queue_login_modal" hidden >
+  Launch demo modal22222
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="Queue_login_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content modal_body_contents">
+          
+          <div class="modal-body">
+            <div class="queue-title-wrapper">
+              <h5 class="modal-title" id="exampleModalLongTitle">Select Queue</h5>
+              
+                <button type="button" class="queue-close-btn" data-bs-dismiss="modal">
+             
+                  <i class="fa-solid fa-xmark"></i>
+            
+              </button>
+            </div>
+            <div class="queue-info-wrapper">
+              <div class="main_queue_div">
+               
+              </div>
+              <div class="" style="justify-content: center;border: none;">
+                <button type="button" class="btn btn-primary queue_login_subbtn" style="width:49%;background: #007DD5;" data-bs-dismiss="modal">Submit</button>
+                <button type="button" class="btn btn-outline-secondary queue_cancel" style="width:49%" data-bs-dismiss="modal">Cancel</button>
+              </div>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- modal  Queue login ends -->
+
+
+
+  <!-- ///////////////////////////////////////Edit user popup starts///////////////////////////////// -->
+
+<button type="button" class="btn btn-primary open-modal2"  data-bs-toggle="modal" data-bs-target="#editusermodal" hidden >
+  Launch demo modal22222
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="editusermodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <input type="hidden"  name="updateuserid" value="">
+      <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 441px;">
+        <div class="modal-content modal_body_contents">
+          
+          <div class="modal-body">
+            <div class="edit-title-wrapper">
+              <h5 class="modal-title" id="exampleModalLongTitle">Edit</h5>
+            </div>
+            <div class="edit-info-wrapper">
+              <div class="edit-content-wrapper">
+                <div>
+                  <label for="user_name">Name</label>
+                  <input type="text" name="editusername_val" id="user_name" placeholder="Enter Username" value="">
+                </div>
+                <div>
+                  <label for="user_area">Area</label>
+                  <input type="text" name="editarea_val" id="user_area" placeholder="Enter Area" value="">
+                </div>
+                <div>
+                  <label for="user_pincode">Pincode</label>
+                  <input type="text" name="editpincode_val" id="user_pincode" placeholder="Enter Pincode" value="">
+                </div>
+              </div>
+              <div class="dropdowns__div">
+                <div>
+                  <div style="display: grid;">
+                    <label for="">Join date</label>
+                    <input type="date" name="editjoindate_val">
+                  </div>
+                  
+                  <div class="travelby-div">
+                    <label for="">Travel By</label>
+                    <div>
+                      <select name="edittravelby_val" id="edittravelby" class="np-select-par" style="width:100%">
+                        <option value="">select</option>
+                        <option value="walking">walking</option>
+                        <option value="Public Transport">Public Transport</option>
+                        <option value="Own vehicle">Own vehicle</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="" style="justify-content: center;border: none;">
+                <button type="button" class="btn btn-primary edituser_subbtn" style="width:49%;background: #007DD5;" data-bs-dismiss="modal">Submit</button>
+                <button type="button" class="btn btn-outline-secondary" style="width:49%" data-bs-dismiss="modal">Cancel</button>
+              </div>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- //////////////////////////Edit user popup ends//////////////////////////////////////////// -->
+
+
+  
+  
+<!-- whatsapp popup starts -->
+
+
+
+<div class="modal fade" id="exampleModal3"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal_body_contents">
+      <div class="modal-header" style="border-bottom: none !important;padding: 0px;width: 91%;
+      margin: auto;">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 10px;">WhatsApp to</h5>
+        <div class="whatsapp_sel_div" style=" width: 40%;">
+          <select name="whats_up_to" id="add-whatsup-modal" class="whatsapp_sel np-select">
+            <option value="">select</option>
+            {% for i in info %}
+            {% if i.whatsapp_number == None or i.whatsapp_number == "nan" or i.whatsapp_number == "" %}
+            {% else %}
+            <option value="{{i.whatsapp_number}}">{{i.whatsapp_number}}</option>
+            {% endif %}
+            {% endfor %}
+            {% for i in a %}
+            {% if i.whatsapp_number == None or i.whatsapp_number == "nan" or i.whatsapp_number == "" %}
+            {% else %}
+            <option value="{{i.whatsapp_number}}">{{i.whatsapp_number}} </option>
+            {% endif %}
+            {% endfor %}
+          </select>
+
+        </div>
+
+      
+       
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style=" font-size: 8px;"></button>
+      </div>
+      <div class="modal-body" style="padding: 0px;">
+       
+        <div class="modal__message">
+          <textarea name="whats_text" id="whatsin" cols="41" rows="7" placeholder="Type here ..." ></textarea>
+          </div>
+      </div>
+       <div class="buttons___wrapper"  style="padding: 0px;margin-bottom: 0px;justify-content: space-between;width: 93%;margin: auto;">
+        <input type="file" name="what_file" class="actual__input_what"style="opacity: 0;width:0px;height:0; position:absolute;inset:0">
+                   
+            <button type="button" class="attach_btn"  id="att-what">
+              <img src="{% static 'images/attach_file.svg' %}" height="15px" alt="">
+            </button>
+          
+            <span class="filen whatfile"></span>
+
+            <button type="button"  class="Submit__btn what_sendbtn" id="" data-bs-dismiss="modal" >
+              <span >SEND</span>
+              <img src="{% static 'images/send.svg' %}" height="11px" style="margin-top: 2px;" alt="">
+            </button>
+       </div>
+      <!-- <div class="modal-footer">
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<!-- whats upp popup ends -->
+
+<!-- email popup starts -->
+
+  
+<div class="modal fade" id="exampleModal4"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 358px">
+    <div class="modal-content modal_body_contents">
+      <form action="" method="post" id="emailform">
+        {% csrf_token %}
+      <div class="modal-header" style="border-bottom: none !important;padding: 0px;width: 91%;
+      margin: auto;">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 10px;">Email to</h5>
+        <div class="email_sel_div" style=" width: 57%;">
+          <select name="email_to" id="add-email-modal" class="email_sel np-select">
+            <option value="">select</option>
+            {% for i in info %}
+            {% if i.email_id == None or i.email_id == "nan" or i.email_id == "" %}
+            {% else %}
+            <option value="{{i.email_id}}">{{i.email_id}}</option>
+            {% endif %}
+            {% endfor %}
+
+            {% for j in a %}
+            {% if j.email == None or j.email == "nan" or j.email == "" %}
+            {% else %}
+            <option value="{{j.email}}">{{j.email}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+          <span id="email_to_error"></span>
+
+        </div>
+
+      
+       
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style=" font-size: 8px;"></button>
+      </div>
+      <div class="modal-body" style="padding: 0px;">
+       
+        <div class="modal__message">
+          <div class="email_dd_div">
+              <div class="email_info_div">
+                  CC : helpdesk@gmail.com
+              </div>
+              <div class="email_info_div">
+                    Subject : <input type="text" name="email_subj" class="email_sel_input" id="" autocomplete="off">
+                    <span id="sub-error" required></span>
+              </div>
+              <textarea name="email_msg"  class="e_msg" id="whatsin" cols="41" rows="7" placeholder="Type here ..." required></textarea>
+              <span id="e_msg_error"></span>
+          </div>
+          </div>
+      </div>
+       <div class="buttons___wrapper"  style="padding: 0px;margin-bottom: 0px;justify-content: space-between;width: 93%;margin: auto;">
+        <input type="file" name="email_file" class="actual__input_email"style="opacity: 0;width:0px;height:0; position:absolute;inset:0">
+                   
+            <button class="attach_btn" id="att-email" type="button">
+              <img src="{% static 'images/attach_file.svg' %}" height="15px" alt="">
+            </button>
+
+            <span class="filen" id="emailfile"></span>
+
+            <button type="button"  class="Submit__btn email_sendbtn" id="" data-bs-dismiss="modal" >
+              <span >SEND</span>
+              <img src="{% static 'images/send.svg' %}" height="11px" style="margin-top: 2px;" alt="">
+            </button>
+       </div>
+      </form>
+      <!-- <div class="modal-footer">
+      </div> -->
+    </div>
+  </div>
+</div>
+<!-- email popup ends -->
+<!-- rtm first popup   -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#incomingpopup" hidden
+  id="confirmcon5" >
+  asdassal
+</button>
+<!-- Modal -->
+<div class="modal fade" id="incomingpopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal_body_contents">
+      <div class="modal-header" style="padding: 0;">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size: 12px; color: gray;">Agent: <span
+            class="addnAhent"></span> </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="font-size: 9px;"></button>
+      </div>
+      <!-- <div class="incomingtitle">add customer to <div><i class="fa-solid fa-xmark" ></i></div></div> -->
+      <!-- <hr style="width: 300px; color: #909090;"> -->
+      <div style="text-align: center; color: #047BD5; margin-top: 10px;">Select Your Mode</div>
+      <div class="modal-body" style="font-size: 19px;">
+        <div class="rtmmain-process icon-container">
+          <div class="RTMpopup listenclick"> <i class="fa-solid fa-microphone rtmmy-custom-class1"></i>
+            <p class="rtompopupfont">listen</p>
+          </div>
+          <div class="RTMpopup wisperclick"> <i class="fa-solid fa-headphones  rtmmy-custom-class2"></i>
+            <p class="rtompopupfont">whisper</p>
+          </div>
+          <div class="RTMpopup barginlick"> <i class="fa-solid fa-user-group rtmmy-custom-class3"></i>
+            <p class="rtompopupfont">Bargin</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- //////////////////////////////////////rtm popup starts///////////////////////////////// -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rtmpopup2" id="confirmcon7" hidden>
+  Launch demo modal2222222222222
+</button>
+<!-- Modal -->
+<div class="modal fade" id="rtmpopup2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="z-index: 10000;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal_body_contentss">
+      <div class="modal-bodyy">
+        <h3 class="selectrtmwb">Enjoy</h3>
+        <div class="modedivee"><span class="lwbmode"></span> is started.... </div>
+        <div class="lwbdivmain">
+          <div>started by
+            
+          </div>
+          <div class="lwbiconnn"></div>
+          <div>To
+            <div class="agentto"></div>
+          </div>
+        </div>
+        <div>
+          <div class="main_queue_div2">
+            <div>
+              <button type="button" class="popupcancelbtn callmonitor_hangup" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </div>
+          <div class="" style="justify-content: center;border: none;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--rtm popup ends -->
+
+
+<!-- Data Not found in progressive Dialing pop-up starts -->
+
+<div class="popup popup--icon -danger no-data-popup js_danger-popup">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">Oops!!! Sorry</h3>
+    <p class="finalmsg">You Don't have any data to continue the Progressive Dailing Please Co-ordinate with your Administrator</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <button class="button btn_danger button--success" data-for="no-data-popup" id="confirm_for_nodata_pro">Ok</button>
+     
+    </p>
+  </div>
+</div>
+  <!--Trigger button -->
+  <button class="button button--success" type="button" id="no-datafound-progressive" data-for="no-data-popup" hidden></button>
+
+<!-- Data Not found in progressive Dialing pop-up ends   -->
+
+
+
+
+
+<!--/////////////////////// modal already logged start  /////////////////////////////// -->
+
+<div class="popup popup--icon -success js_danger-popup del-progressive-popup">
+  <div class="popup__background"></div>
+  <div class="popup__content">
+    <h3 class="popup__content__title">Delete</h3>
+    <p class="finalmsg">Are you sure do you want to Delete Data?</p>
+    <p style="margin: 0;display: flex;justify-content: center;gap: 6px;margin-top: 15px;">
+      <button class="button btn_disabled button--success"  data-for="del-progressive-popup">No</button>
+      <button class="button btn_danger button--success" id="del-progressive-data-btn" data-for="del-progressive-popup">Yes</button>
+    </p>
+  </div>
+</div>
+  <!--modal  submit Data successfully ends -->
+  <button class="button button--success" type="button" id="del-progressive" data-for="del-progressive-popup" hidden></button>
+
+
+
+  
+<!-- Queue Detials pop-up starts -->
+
+
+<button type="button" class="btn btn-primary queue-details-modal"  data-bs-toggle="modal" data-bs-target="#Queue_details_modal" hidden>
+  Launch demo modal22222
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="Queue_details_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content modal_body_contents">
+          
+          <div class="modal-body">
+            <div class="queue-title-wrapper">
+              <h5 class="modal-title" id="exampleModalLongTitle"> Queue Status</h5>
+            </div>
+            <div class="queue-info-wrapper">
+              <div class="queue-details">
+                <div class="queue-wrapper">
+                  <div class="queue-div"><span>Inbound Queue</span><span class="queue-marker"><i class="fa-regular fa-circle-check"></i></span></div>
+                  <div class="queue-div"><span>Testing Queue</span><span class="queue-marker"><i class="fa-regular fa-circle-xmark"></i></span></div>
+                </div>
+              </div>
+              <div class="queue-btn-wrapper" style="justify-content: center;border: none;">
+                <button type="button" class="btn btn-primary" style="width:90px;background: #007DD5;" data-bs-dismiss="modal">Done</button>
+                <button type="button" class="btn btn-outline-secondary queue-details-cancel" style="width:90px" data-bs-dismiss="modal">Cancel</button>
+              </div>
+              <div class="queue-note"><span class="queue-note-title">Note : </span><span>If <i class="fa-regular fa-circle-xmark"></i> please check your Xlite .</span></div>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<!--- Queue Detials pop-up ends --->
+
+
+
+
+
+<!-- IVR Confirmation Popup starts -->
+
+<button type="button" class="btn btn-primary IVR-confirmation"  data-bs-toggle="modal" data-bs-target="#Ivr_confirm" hidden>
+  Launch demo modal22222
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="Ivr_confirm" tabindex="-1"  data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content modal_body_contents">
+          
+          <div class="modal-body">
+            <div class="ivr-title-wrapper">
+              <div class="ivr-title" id="exampleModalLongTitle">Are You Sure ? </div>
+            </div>
+            <div class="">
+              <div class="ivr-body">
+                You want to Continue <span class="ivr-file-name"></span> as IVR Files  ?
+              </div>
+              <div class="ivr-btn-wrapper">
+                <button type="button" class="ivr-yes-btn ivr-popup-btn" data-bs-dismiss="modal">Yes <span class="ivr-correct-span"><i class="fa-solid fa-check correct-sign"></i></span></button>
+                <button type="button" class="ivr-no-btn ivr-popup-btn" data-bs-dismiss="modal">No <span class="ivr-correct-span"><i class="fa-solid fa-xmark incorrect-sign"></i></span></button>
+              </div>
+           </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- IVR Confirmation Popup ends -->
+
+
+
+
+<script>
+const addButtonTrigger = (el) => {
+    console.log("done")
+    el.addEventListener('click', () => {
+    const popupEl = document.querySelector(`.${el.dataset.for}`);
+    popupEl.classList.toggle('popup--visible');
+    console.log("its")
+  });
+};
+Array.from(document.querySelectorAll('button[data-for]')).forEach(addButtonTrigger);
+</script>

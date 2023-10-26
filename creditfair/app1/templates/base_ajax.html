@@ -1,0 +1,1210 @@
+<script>
+  const token_val = localStorage.getItem('token')
+  let link="http://127.0.0.1:8001"
+  let  process;
+  let user_level;
+ console.log(token_val , "token")
+  const checktoken = async() => {
+    try {
+      const response = await fetch('http://127.0.0.1:8001/checktoken',{
+        method : 'GET',
+        headers: {
+            "Authorization": `Bearer ${token_val}`, // Use Bearer token scheme
+        }
+      });
+      if (!response.ok){
+        throw new Error('errorrr')
+      }
+      const data = await response.json()
+      process=data.process
+      user_level=data.user_level
+      console.log(data.status,data.msg,'datastatus',user_level,process)
+    } catch (error) {
+      localStorage.clear();
+      window.location.href = '/login'
+    }
+  }                           
+                    
+
+
+
+  const append_nav = async() => {
+    try {
+      const response = await fetch('http://127.0.0.1:8001/append_nav',{
+        method:'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token_val}`, // Use Bearer token scheme
+        },
+      });
+      if (response.ok){
+        const data = await response.json()
+        console.log(data.user_level,'data')
+        $('.nav_links').html('')
+
+        if (data.status === 200){
+          module = data.module
+          process = data.process
+          user_level = data.user_level
+          if (data.user_level == 10){
+            $('.nav-links').html(
+              `
+              <li style="border-radius: 10px;" class="dashsel arrow2">
+                <div class="iocn-link">
+                  <a href="/dashboard">
+                    <i><img  src = '/static/images/vector.svg' style="height: 18px;"/></i>
+                    <span class="link_name">Dashboard</span>
+                  </a>
+                  <i class='fa-solid fa-caret-down arrow' style="min-width: 6px;margin-right:21px;font-size: 14px;"></i>
+                </div>
+                <ul class="sub-menu" style="border-radius: 10px;">
+                  <li><a class="link_name" href="/dashboard">Dashboard</a></li>
+                  <li><a href="/lead_behaviour">Team OverALL Report</a></li>
+                  <li><a href="/livem">RTM (Real Time Monitor)</a></li>
+                </ul>
+              </li>
+              <li>
+            <div class="iocn-link">
+                <li style="border-radius: 10px;" class="sa">
+                    <a href="/search">
+                        <i class="fa-solid fa-magnifying-glass"
+                            style=" color: white;font-size: 18px;"></i>
+                        <span class="link_name">Search</span>
+                    </a>
+                </li>
+
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src='/static/images/icon.svg'
+                                    style="height: 18px;" />
+                                <span class="cmsnotification"></span>
+                            </i>
+                            <span class="link_name">Call Management System</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Call Management System</a></li>
+                        <li><a href="/reminder">Reminder<div class="notification"
+                                    style="font-size: 9px;position: absolute;margin-left:45px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        <li><a href="/missedcall">Missed Call<div class="missnotification" style="font-size: 9px;position: absolute;margin-left:55px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        <li><a href="/recovery">Recovery Status</a></li>
+                    </ul>
+                </li>
+                
+                <li style="border-radius: 10px;" class="otspage">
+                    <a href="/ots">
+                        <i><img src="/static/images/deal icon.svg"
+                                style="height: 18px;" /></i>
+                        <span class="link_name">One Time Settlement</span>
+                    </a>
+                </li>
+               
+             
+                <li style="border-radius: 10px;" class="ctc">
+                    <a href="/connect_to_customer">
+                        <i><img src="/static/images/connect.png" style="height: 18px;" alt=""></i>
+                        <span class="link_name">Connect To Customer</span>
+                    </a>
+                </li>
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/create_user">
+                        <i class="fa-solid fa-user-plus" style="font-size: 16px;"></i>
+                        <span class="link_name">Create User</span>
+                    </a>
+                </li>
+              
+                
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src="/static/images/icon.svg"
+                                    style="height: 18px;" />
+                            </i>
+                            <span class="link_name ">Lead Management System</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Lead Management System</a></li>
+                        <li><a href="/upload_export">Data Import/Export</a></li>
+                        <li><a href="/leadupdate">Lead Update</a></li>
+                        <li><a href="/dnd">DNC</a></li>
+                    </ul>
+                </li>
+               
+                
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src="/static/images/qualityanalysis.png"
+                                    style="height: 18px;" />
+                            </i>
+                            <span class="link_name ">Quality Score</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Quality Analysis</a></li>
+                        <li><a href="/quality">Quality Analysis</a></li>
+                        <li><a href="/qualityexport">Quality Export</a></li>
+
+                    </ul>
+                </li>
+                
+                
+                
+               
+                
+                <div class="logoutlinkdiv" onclick="logout_api()">
+                    <li style="border-radius: 10px;">
+                        <a href="#">
+                            <i class="fa-solid fa-power-off" style=" color: white;font-size: 18px"></i>
+                            <span class="link_name">Logout</span>
+                        </a>
+                    </li>
+                </div>
+              `
+            )
+          }
+          if (data.user_level == 9){
+            $('.nav-links').html(
+              `
+              <li style="border-radius: 10px;" class="dashsel arrow2">
+                <div class="iocn-link">
+                  <a href="/dashboard">
+                    <i><img  src = '/static/images/vector.svg' style="height: 18px;"/></i>
+                    <span class="link_name">Dashboard</span>
+                  </a>
+                  <i class='fa-solid fa-caret-down arrow' style="min-width: 6px;margin-right:21px;font-size: 14px;"></i>
+                </div>
+                <ul class="sub-menu" style="border-radius: 10px;">
+                  <li><a class="link_name" href="/dashboard">Dashboard</a></li>
+                  <li><a href="/lead_behaviour">Team OverALL Report</a></li>
+                  <li><a href="/livem">RTM (Real Time Monitor)</a></li>
+                </ul>
+              </li>
+              <li>
+            <div class="iocn-link">
+                <li style="border-radius: 10px;" class="sa">
+                    <a href="/search">
+                        <i class="fa-solid fa-magnifying-glass"
+                            style=" color: white;font-size: 18px;"></i>
+                        <span class="link_name">Search</span>
+                    </a>
+                </li>
+
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src='/static/images/icon.svg'
+                                    style="height: 18px;" />
+                                <span class="cmsnotification"></span>
+                            </i>
+                            <span class="link_name">Call Management System</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Call Management System</a></li>
+                        <li><a href="/reminder">Reminder<div class="notification"
+                                    style="font-size: 9px;position: absolute;margin-left:45px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        <li><a href="/missedcall">Missed Call<div class="missnotification" style="font-size: 9px;position: absolute;margin-left:55px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        <li><a href="/recovery">Recovery Status</a></li>
+                    </ul>
+                </li>
+                
+                <li style="border-radius: 10px;" class="otspage">
+                    <a href="/ots">
+                        <i><img src="/static/images/deal icon.svg"
+                                style="height: 18px;" /></i>
+                        <span class="link_name">One Time Settlement</span>
+                    </a>
+                </li>
+               
+                
+                
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/non_attempted">
+                        <i><img src="/static/images/noncontacted.png"
+                              style="height: 18px;" /></i>
+                        <span class="link_name">Non-Attempted</span>
+                    </a>
+                </li>
+               
+
+                
+
+                
+             
+                <li style="border-radius: 10px;" class="ctc">
+                    <a href="/connect_to_customer">
+                        <i><img src="/static/images/connect.png" style="height: 18px;" alt=""></i>
+                        <span class="link_name">Connect To Customer</span>
+                    </a>
+                </li>
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/create_user">
+                        <i class="fa-solid fa-user-plus" style="font-size: 16px;"></i>
+                        <span class="link_name">Create User</span>
+                    </a>
+                </li>
+              
+                
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src="/static/images/icon.svg"
+                                    style="height: 18px;" />
+                            </i>
+                            <span class="link_name ">Lead Management System</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Lead Management System</a></li>
+                        <li><a href="/upload_export">Data Import/Export</a></li>
+                        <li><a href="/leadupdate">Lead Update</a></li>
+                        <li><a href="/dnd">DNC</a></li>
+                    </ul>
+                </li>
+               
+                
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src="/static/images/qualityanalysis.png"
+                                    style="height: 18px;" />
+                            </i>
+                            <span class="link_name ">Quality Score</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Quality Analysis</a></li>
+                        <li><a href="/quality">Quality Analysis</a></li>
+                        <li><a href="/qualityexport">Quality Export</a></li>
+
+                    </ul>
+                </li>
+                <li style="border-radius: 10px;">
+                    <a href="/sms">
+                        <i><img src="/static/images/bulk sms 1.png" style="height: 18px;" /></i>
+                        <span class="link_name">SMS</span>
+                    </a>
+                </li>
+                
+                
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/progressive">
+                        <i class="fa-solid fa-arrows-spin" style="font-size: 16px;"></i>
+                        <span class="link_name">Progressive</span>
+                    </a>
+                </li>
+                
+                <div class="logoutlinkdiv" onclick="logout_api()">
+                    <li style="border-radius: 10px;">
+                        <a href="#">
+                            <i class="fa-solid fa-power-off" style=" color: white;font-size: 18px"></i>
+                            <span class="link_name">Logout</span>
+                        </a>
+                    </li>
+                </div>
+              `
+            )
+          }
+          if (data.user_level == 1){
+            $('.nav-links').html(
+              `
+              <li style="border-radius: 10px;" class="dashsel arrow2">
+                <div class="iocn-link">
+                  <a href="/dashboard">
+                    <i><img  src = '/static/images/vector.svg' style="height: 18px;"/></i>
+                    <span class="link_name">Dashboard</span>
+                  </a>
+                  <i class='fa-solid fa-caret-down arrow' style="min-width: 6px;margin-right:21px;font-size: 14px;"></i>
+                </div>
+                <ul class="sub-menu" style="border-radius: 10px;">
+                  <li><a class="link_name" href="/dashboard">Dashboard</a></li>
+                  <li><a href="/lead_behaviour">Team OverALL Report</a></li>
+                </ul>
+              </li>
+              <li>
+            <div class="iocn-link">
+                <li style="border-radius: 10px;" class="sa">
+                    <a href="/search">
+                        <i class="fa-solid fa-magnifying-glass"
+                            style=" color: white;font-size: 18px;"></i>
+                        <span class="link_name">Search</span>
+                    </a>
+                </li>
+
+                <li style="border-radius: 10px;" class="cmssel arrow2">
+                    <div class="iocn-link">
+                        <a href="#">
+                            <i style="position: relative;">
+                                <img class="cmsimg" src='/static/images/icon.svg'
+                                    style="height: 18px;" />
+                                <span class="cmsnotification"></span>
+                            </i>
+                            <span class="link_name">Call Management System</span>
+                        </a>
+                        <i class='fa-solid fa-caret-down showno arrow'
+                            style="min-width: 6px; margin-right: 21px;font-size: 14px;"></i>
+                    </div>
+                    <ul class="sub-menu" style="border-radius: 10px;">
+                        <li><a class="link_name" href="#">Call Management System</a></li>
+                        <li><a href="/reminder">Reminder<div class="notification"
+                                    style="font-size: 9px;position: absolute;margin-left:45px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        <li><a href="/missedcall">Missed Call<div class="missnotification" style="font-size: 9px;position: absolute;margin-left:55px;background-color: red;border-radius: 50%;margin-top: -13px;color: white;height:15px;width:15px;text-align: center;padding-top: 1px;"></div></a></li>
+                        
+                        <li><a href="/recovery">Recovery Status</a></li>
+                    </ul>
+                </li>
+                
+                <li style="border-radius: 10px;" class="otspage">
+                    <a href="/ots">
+                        <i><img src="/static/images/deal icon.svg"
+                                style="height: 18px;" /></i>
+                        <span class="link_name">One Time Settlement</span>
+                    </a>
+                </li>
+               
+               
+                
+                
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/non_attempted">
+                        <i><img src="/static/images/noncontacted.png"
+                              style="height: 18px;" /></i>
+                        <span class="link_name">Non-Attempted</span>
+                    </a>
+                </li>
+                
+                
+                <li style="border-radius: 10px;" class="non-atmp">
+                    <a href="/progressive">
+                        <i class="fa-solid fa-arrows-spin" style="font-size: 16px;"></i>
+                        <span class="link_name">Progressive</span>
+                    </a>
+                </li>
+                
+                <div class="logoutlinkdiv" onclick="logout_api()">
+                    <li style="border-radius: 10px;">
+                        <a href="#">
+                            <i class="fa-solid fa-power-off" style=" color: white;font-size: 18px"></i>
+                            <span class="link_name">Logout</span>
+                        </a>
+                    </li>
+                </div>
+              `
+            )
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const logout_api = async() => {
+    try {
+      const response = await fetch('http://127.0.0.1:8001/logout',{
+        method:'GET',
+        headers:{
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token_val}`, // Use Bearer token scheme
+        },
+      });
+      if (!response.ok){
+        console.log('error')
+      }
+      if (response.ok){
+        const data = await response.json()
+        if (data.status === 200){
+          localStorage.clear()
+          localStorage.clear()
+          window.location.href = '/login'
+        }
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const queue_paused = async () => {
+    try{
+      let response = await fetch(`${link}/queue_paused`,{
+        method : "GET",
+        headers : {
+          "Authorization":`Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+        }
+      })
+      let result = await response.json()
+      if(result.data){
+        console.log(result.data)
+      }
+
+    }catch(error){
+
+    }
+  }
+
+  const queue_unpaused = async () => {
+    try{
+      let response = await fetch(`${link}/queue_unpaused`,{
+        method : "GET",
+        headers : {
+          "Authorization":`Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+        }
+      })
+      let result = await response.json()
+      if(result.data){
+        console.log(result.data)
+      }
+
+    }catch(error){
+
+    }
+  }
+
+
+  queue_unpaused()
+
+  const get_queue_status = async() => {
+    try{
+      const response = await fetch(link + '/check_extension_in_queue',{
+        headers:{
+          "Authorization":`Bearer ${token_val}`,
+          'Content-Type':"application/json"
+        }
+      })
+      const result = await response.json()
+      console.log(result,"resulllttttttt")
+
+      let x=result.queue_data
+        let icon_class;
+        $(".queue-wrapper").html("")
+        for (i in x){
+          let icon_class = x[i].status === "1" ? "fa-circle-check" : "fa-circle-xmark";
+          $(".queue-wrapper").append(
+           `<div class="queue-div"><span>${x[i].queue_name}</span><span class="queue-marker"><i class="fa-regular ${icon_class}"></i></span></div>`
+          )
+        }
+      $(".queue-details-modal").click()
+    }catch(err){
+      console.log(err,"error message")
+    }
+  }
+  const queue_status = async() => {
+    try{
+      const response = await fetch(link + '/queuestatus',{
+        headers:{
+          "Authorization":`Bearer ${token_val}`,
+          'Content-Type':"application/json"
+        }
+      })
+      if(!response.ok){
+        throw new Error('Something went wrong')
+      }
+      const result = await response.json()
+      setTimeout(get_queue_status,2000)
+
+    }catch(err){
+      console.log(err,"error message")
+    }
+
+  }
+
+
+const queue_call = async() => {
+  try{
+    let response = await fetch(`${link}/queues_call`,{
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type": "application/json",
+      }
+    })
+    if (!response.ok){
+      throw new Error("error")
+    }
+    let result = await response.json()
+    if (result){
+      let count=result.queue_ct
+      if(count && count !== "0"){
+        $(".queue-count").html(count)
+        $(".calls-queue-wrapper").removeClass("hidden");
+        $(".calls-queue-wrapper").addClass('moveFromTop-animation');
+        console.log("It's in queue condition");
+        setTimeout(function () {
+          console.log("It's call");
+          $("#cancelButton").click();
+        }, 5000);
+      }
+    }
+  }catch(error){
+    console.log(error)
+  }
+}
+  ///////////////////////////////////Login_queue starts//////////////////////
+
+
+  async function queue_login(ls) {
+    try {
+      const response = await fetch(link + '/login_in_queue',{
+        method:"POST",
+        headers:{
+          "Authorization":`Bearer ${token_val}`,
+          'Content-Type':"application/json"
+        },
+        body:JSON.stringify({"queue_ls":ls})
+      })
+      if(!response.ok){
+        throw new Error('Something went wrong')
+      }
+      queue_status()
+      
+    } catch (error) {
+      console.log(error,"message")
+    }
+  
+  }
+  ///////////////////////////////////Login_queue ends//////////////////////
+
+  async function get_user_info(){
+    try {
+      const response = await fetch(link + '/get_user_info',{
+        method:"GET",
+        headers : {
+            "Authorization": `Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+        },
+      })
+      if (!response.ok){
+        throw new Error("Something went wrong!")
+      }
+      const result = await response.json()
+      const user = result.user[0]
+      // console.log(user,"result from user info")
+      const user_level = user.user_level
+      const process = user.process
+      const queue_login_sess = localStorage.getItem('queue_login')
+
+      if (user_level=="1" &&  process.toLocaleLowerCase() == "inbound") {
+        setInterval(function () {
+          // realtime();
+          check_incoming();
+        }, 2000);
+
+        if (!queue_login_sess && queue_login_sess != "true") {
+          $(".open-queue-modal").click()
+        }
+        setInterval(function(){
+          console.log("calling your function")
+          queue_call();
+        },7000)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  get_user_info()
+
+  //////////////////////////////////// get queue numbers start /////////////////////////
+  const get_queue_no = async() => {
+    try {
+      const response = await fetch(link + '/queues_data',{
+        headers:{
+          "Authorization":`Bearer ${token_val}`,
+          'Content-Type':"application/json"
+        },
+      })
+      if(!response.ok){
+        throw new Error('Something went wrong')
+      }
+      
+      const result = await response.json()
+
+      const x = result.data
+
+      for (i in x){
+        $('.main_queue_div').append(
+          ` <div class="queue_no_div">
+              <label>
+                <input type="checkbox" name="queue_val" value=${x[i].queue_no}>
+                <span class="queue_no">${x[i].queue_name}</span>
+              </label>
+            </div>`
+        )
+      }
+      
+    } catch (error) {
+      console.log(error,"message from queueu datatatat")
+    }
+
+    };
+  //////////////////////////////////// get queue numbers end /////////////////////////
+
+
+
+
+  var csrf = `{{ csrf_token }}`;
+  let break_id = null
+  /////////////////break function start//////////////////////
+  function take_break(event) {
+    let data = new FormData();
+    let breakval = localStorage.getItem("breakval");
+    break_id = localStorage.getItem('break_id')
+    data.append("event", event);
+    data.append("type", breakval);
+    data.append('break_id',break_id)
+    $.ajax({
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrf,
+      },
+      url: "/break_events",
+      data: data,
+      datatype: "json",
+      processData: false,
+      contentType: false,
+      success: function (data) {
+        console.log(data.status);
+        if (data.status === 202){
+          queue_unpaused();
+          localStorage.setItem("break", false);
+          localStorage.removeItem("break_start_time");
+          $(".parent-main").addClass("d-none");
+          status = "Idle";
+          update_values2(status);
+          // setTimeout(location.reload(), 2000);
+        } else if(data.status === 200){
+          break_id = data.break_id
+          localStorage.setItem('break_id',data.break_id)
+        }
+      },
+    });
+  }
+
+
+  const notificationCount = async() => {
+    try {
+      url = 'http://127.0.0.1:8001/notificationCount'
+      const response = await fetch(url,{
+        method :"GET",
+        headers : {
+            "Authorization": `Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+        },
+      });
+      data = await response.json()
+      $(".notification").html(data.value);
+      $(".cmsnotification").html(data.value);
+      console.log(data.value,'datacount');
+      if (data.value == null || data.value == "0") {
+        $(".notification").css({ display: "none" });
+        $(".cmsnotification").css({ display: "none" });
+      } else {
+        $(".cmsnotification").css({ display: "block" });
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const misscallednotiCount = async() => {
+    try {
+      url = 'http://127.0.0.1:8001/misscallednotiCount';
+      const response = await fetch(url,{
+        method :"GET",
+        headers : {
+            "Authorization": `Bearer ${token_val}`,
+            "Content-Type" : "application/json",
+        },
+      });
+      data = await response.json()
+      console.log("count",data);
+      $(".missnotification").html(data.d);
+      if (data.d == null || data.d == "0") {
+        $(".missnotification").css({ display: "none" });
+      } else {
+        $(".missnotification").css({ display: "block" });
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  /////////////////////////////////////Start  New Timer Function////////////////////////////////////////////////////////////////////////////////
+  let currentTime = new Date();
+
+  // Convert back to time string
+  let currentTimeString = currentTime.toLocaleTimeString("en-US", {
+    hour12: false,
+  });
+
+  function get_time_differnece(start, end) {
+    // Convert start and end times to Date objects
+    // console.log(start, end, "get_timemeemdiffff");
+    var startDate = new Date(Date.parse("2023-04-23 " + start));
+    var endDate = new Date(Date.parse("2023-04-23 " + end));
+
+    // Calculate the difference in milliseconds
+    var difference = endDate.getTime() - startDate.getTime();
+
+    // Convert the difference to hours, minutes and seconds
+    var hours = Math.floor(difference / 1000 / 60 / 60);
+    var minutes = Math.floor((difference / 1000 / 60) % 60);
+    var seconds = Math.floor((difference / 1000) % 60);
+
+    // Format the time components as strings
+    var hoursStr = (hours < 10 ? "0" : "") + hours;
+    var minutesStr = (minutes < 10 ? "0" : "") + minutes;
+    var secondsStr = (seconds < 10 ? "0" : "") + seconds;
+
+    // Return the formatted time string
+    return hoursStr + " : " + minutesStr + " : " + secondsStr;
+  }
+
+  function startBreakTimer() {
+    currentTimeString = localStorage.getItem("break_start_time");
+    const currentTime2 = new Date();
+
+    currentTime2.setHours(currentTime2.getHours());
+    currentTime2.setMinutes(currentTime2.getMinutes());
+    currentTime2.setSeconds(currentTime2.getSeconds());
+
+    // Convert back to time string
+    currentTime2String = currentTime2.toLocaleTimeString("en-US", {
+      hour12: false,
+    });
+
+    let differ = get_time_differnece(currentTimeString, currentTime2String);
+
+    $("#stopWatch").text(differ);
+
+    // console.log(differ)
+    // return differ
+  }
+  ///////////////////////////////////// End New Timer Function////////////////////////////////////////////////////////////////////////////////
+
+  const realtime = async() => {
+    try{
+      let response = await  fetch(`${link}/rt`,{
+        method : "POST",
+        headers : {
+          "Authorization" : `Bearer ${token_val}`,
+          "Content-Type":"application/json"
+        },
+      body: new FormData(),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data.status, "its real");
+    } else {
+      console.error("Request failed with status:", response.status);
+    }
+    }catch(error){
+      console.log(error)
+    }
+  }
+ 
+  const check_incoming = async() => {
+  try {
+    let response = await fetch(`${link}/check_for_incoming`, {
+      method: "GET",
+      headers : {
+          "Authorization" : `Bearer ${token_val}`,
+          "Content-Type":"application/json"
+        },
+    });
+    if (response.ok) {
+      let data = await response.json();
+      console.log(data.id, "check for incoming");
+      if (data.id !== undefined) {
+        window.location.href = `/inc_cms?id=${data.id}&render=dashboard&ph=${data.ph}`;
+      }
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
+}
+
+
+  function update_values2(status, callCount, avgTimeStr) {
+    console.log(status, callCount, avgTimeStr);
+    var csrftoken = "{{ csrf_token }}";
+    $.ajax({
+      url: '/cmsstrartstop}',
+      type: "POST",
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+      data: {
+        status: status,
+      },
+      success: function (response) {
+        console.log(response);
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  }
+
+  ///////////////////////RTM Starts/////////////////////////////////
+  var timerr;
+  var startTimee;
+  var callCount = 0;
+  var totalElapsed = 0;
+  var status = "Not Ready";
+  var timerId;
+  var startTime;
+  userridd = $("input[name=iddddddd]").val();
+  console.log(userridd, "userridd");
+  // Load previous data from local storage
+  var today = new Date().toLocaleDateString();
+  var userId = userridd; // Assuming this function returns the user ID
+  var key = today + "-" + userId;
+  var data = JSON.parse(localStorage.getItem(key));
+  console.log(userId, "userId", "userId");
+  if (data) {
+    callCount = data.callCount;
+    totalElapsed = data.totalElapsed;
+    status = data.status;
+    $("#call-count").text(callCount);
+    $("#status").text(status);
+    var avgTime = totalElapsed / callCount;
+    var avgMinutes = Math.floor(avgTime / 60000);
+    var avgSeconds = Math.floor((avgTime % 60000) / 1000);
+    var avgTimeStr =
+      ("0" + avgMinutes).slice(-2) + ":" + ("0" + avgSeconds).slice(-2);
+    $("#avg-time").text(avgTimeStr);
+  }
+  function startTimerr() {
+    startTimee = new Date().getTime();
+    timerr = setInterval(function () {
+      var now = new Date().getTime();
+      var elapsedTime = now - startTimee;
+      var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+      var timeString = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+      console.log(timeString, "timeString");
+      update_statust2(timeString);
+    }, 1000);
+  }
+
+  function stopTimerr() {
+    clearInterval(timerr);
+  }
+  // /////////////////////RTM ends////////////////////////////////////////
+
+
+  
+  /////////////////////////////#Progressive function starts#///////////////////////////////////
+
+  ///////////////////#update mode for supervisor starts #///////////////////
+  let mode;
+  const update_mode = (val,callback) => {
+      $.ajax({
+        method : "GET",
+        url: `/update_mode?mode=${val}`,
+        success: function (e) {
+          console.log(e.status,"Its your")
+          var super_pro = JSON.parse(localStorage.getItem('super_pro'));
+    
+          const currentUrl = window.location.href;          
+          console.log("Check page name",currentUrl,)
+          mode = e.mode
+          if (e.status == 300){
+           console.log(e.status,e.msg,mode)
+          }
+          console.log(super_pro, mode , "Progresive Orders")
+          if (e.user_level == "1" && +e.status == 200){
+            console.log("progressive dialing started")
+            // localStorage.setItem('progressive', JSON.stringify("on"))
+            if (mode == "Progressive" && (!super_pro || super_pro == "on" )){
+              console.log("lets started")
+              if (!currentUrl.includes("cms")){
+                console.log("seachhhhhhhhhh")
+                check_available_data(true)
+              }
+              
+            }
+          }  
+          if (typeof callback === "function"){
+            callback(mode)
+          }
+        }
+
+      })
+}
+
+  ///////////////////#update mode for supervisor ends #///////////////////
+
+
+  
+// ///////////////////// Progressive Dialing Function starts //////////////////////
+let redirectValue;
+const check_available_data = (mode) => {
+      $.ajax({
+        method : "GET",
+        url: `/check_available_data?mode=${mode}`,
+        success: function (e) {
+          console.log(e.status,e.message,e.mode,"Progressive")
+          const currentUrl = window.location.href;
+          let searchParams = new URLSearchParams(currentUrl.split('?')[1]);
+          redirectValue = searchParams.get('render');
+          // console.log("checkURL from Dialing",redirectValue,currentUrl)
+          if (!redirectValue ){
+
+            searchParams = currentUrl.split('/').pop();
+            console.log(searchParams)
+            redirectValue=searchParams
+            // console.log("checkURL from Dialing",redirectValue,currentUrl)
+          }
+          if (redirectValue == "cms" || redirectValue == ""){
+            redirectValue = "dashboard"
+          }
+
+
+          if (e.status == 200 && e.mode ==="true"){
+            console.log("progressive true",redirectValue,currentUrl)
+
+            localStorage.setItem('super_pro', JSON.stringify("on"))
+            window.location.href = `/cms?id=${e.id}&progressive=true&render=${redirectValue}`
+              return
+          }
+          // else if (e.status == 200 && e.mode ==="false"){
+          //   console.log("progressive false")
+          //   window.location.href = `/cms?id=${e.id}&render=non_attempted`
+          //     return
+          // }
+          else if (e.status == 404){
+            console.log("in else progressive dialing")
+            localStorage.setItem('super_pro', JSON.stringify("off"))
+            $("#no-datafound-progressive").click()
+            
+            $(document).on("click","#confirm_for_nodata_pro",function(){
+              console.log("NO DATA CONFIRM CLICK")
+              window.location.href = `/${redirectValue}`
+    
+                return
+              })
+  
+          }
+        }        
+      })
+}
+
+function change_module(mod){
+        let data = new FormData()
+        data.append('mod',mod)
+        $.ajax({
+            method:'POST',
+            headers:{
+                'X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            url:'/change_module',
+            data:data,
+            datatype:'json',
+            processData: false,
+            contentType: false, 
+            success:function(data){
+                $(".tri-state-toggle-button").removeClass("active");
+                console.log(data.status,'statussssssssssssssssssssss')
+                window.location.reload()
+            }
+        })
+    }
+
+
+    
+  $(document).on('click','.adminone',function(){
+        console.log("asdasdasdadsmotorrrrrrr")
+   
+      mod = 'collection'
+      console.log(mod)
+      change_module(mod)
+      $('.adminone').addClass("module_active")
+      $('.admintwo').removeClass("module_active")
+    })
+  $(document).on('click','.admintwo',function(){
+        console.log("asdasdasdadsmotorrrrrrr")
+        $('.admintwo').addClass("module_active")
+        $('.adminone').removeClass("module_active")
+   
+      mod = 'operation'
+      console.log(mod)
+      change_module(mod)
+    })
+// ///////////////////// Progressive Dialing Function ends //////////////////////
+
+  /////////////////////////////#Progressive function end #/////////////////////////////////////
+
+
+  $(document).ready(function () {
+    console.log("its render from")
+    checktoken()
+    append_nav()
+    resetAnimationState();
+    get_queue_no()
+    notificationCount()
+    misscallednotiCount()
+
+    let module = '';
+    console.log('module', module);
+
+    if (module=="collection"){
+      $('.adminone').addClass("module_active")
+      $('.admintwo').removeClass("module_active")
+    }
+    else if (module=="operation"){
+      $('.admintwo').addClass("module_active")
+      $('.adminone').removeClass("module_active")
+    }   
+   
+
+    $(document).on("click",".queue-details-cancel",function(){
+      $(".open-queue-modal").click()
+    })
+
+    $(".showpro").click(function () {
+      $(".container__div").toggleClass("d-none");
+    });
+    $(".showpro").click(function () {
+      $(".back").addClass("background");
+    });
+
+    $(".queue_login_subbtn").click(function () {
+      localStorage.setItem("queue_login", true);
+      var q = $("input[name=queue_val]:checked").val();
+      var checkedValues = [];
+      $("input[name=queue_val]:checked").each(function () {
+        // Push the value of each checked checkbox into the array
+        checkedValues.push($(this).val());
+      });
+      console.log("checkbox", q, checkedValues);
+      queue_login(checkedValues);
+    });
+
+    $(".queue_cancel").click(function () {
+      localStorage.setItem("queue_login", true);
+    });
+
+    $(document).click(function (e) {
+      let container = $(".container_pro");
+      let c2 = $(".profileimg");
+      if (
+        !container.is(e.target) &&
+        container.has(e.target).length === 0 &&
+        !c2.is(e.target) &&
+        c2.has(e.target).length === 0
+      ) {
+        $(".container__div").addClass("d-none");
+        $(".back").removeClass("background");
+      }
+    });
+
+    ////////////////////break events and functions  start ///////////////////////////////////
+
+    $(document).on("change", "#breakdrop", function () {
+      console.log($(this).val(),'break vallllllllllllllllllllllllllllllllllllllllllll')
+      if ($(this).val() === ''){return} 
+
+      queue_paused();
+
+      currentTime = new Date();
+      console.log("Breaakkkkkkkkkkkkkkkk started")
+      // Convert back to time string
+      currentTimeString = currentTime.toLocaleTimeString("en-US", {
+        hour12: false,
+      });
+
+      $(".sb2").addClass("on");
+      $(".sb1").removeClass("on");
+      $(".parent-main").removeClass("d-none");
+
+      var breakval = $(this).val();
+
+      localStorage.setItem("break", true);
+      localStorage.setItem("breakval", breakval);
+      localStorage.setItem("break_start_time", currentTimeString);
+
+      console.log("in console", breakval);
+      if (breakval == "Tea") {
+        $(".break__type").text("Is on Tea Break");
+      } else if (breakval == "Lunch") {
+        $(".break__type").text("Is on Lunch Break");
+      } else if (breakval == "Meeting") {
+        $(".break__type").text("Is in the Meeting");
+      } else if (breakval == "WR") {
+        $(".break__type").text("Is on the Washroom Break");
+      } else {
+        $(".break__type").text(`Is on the ${breakval} Break`);
+      }
+
+      setInterval(function () {
+        startBreakTimer();
+      }, 1000);
+
+      $(".container_pro").addClass("d-none");
+      $(".back").removeClass("background");
+
+      take_break("start");
+
+      var selectedOption = $(this).val();
+      update_values2(selectedOption);
+    });
+
+    if (
+      localStorage.getItem("break") &&
+      localStorage.getItem("break") == "true"
+    ) {
+      $(".sb2").addClass("on");
+      $(".sb1").removeClass("on");
+      $(".parent-main").removeClass("d-none");
+      setInterval(function () {
+        startBreakTimer();
+      }, 1000); 
+    }
+
+    $("#stop_time").click(function () {
+
+      localStorage.setItem('super_pro', JSON.stringify("on"))
+      $('#breakdrop').val('').trigger('change')
+      take_break("end");
+      update_mode(true)
+    });
+
+    ////////////////////break events and functions end ///////////////////////////////////
+    $(".logoutlinkdiv").click(function () {
+      localStorage.clear()
+      localStorage.clear();
+    });
+
+
+
+  });
+</script>

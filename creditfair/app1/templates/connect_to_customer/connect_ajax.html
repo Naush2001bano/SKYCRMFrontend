@@ -1,0 +1,456 @@
+
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
+<script>
+
+$('.datepick').daterangepicker({
+      timePicker: false,
+      startDate: moment().startOf('hour'),
+      endDate: moment().startOf('hour').add(32, 'hour'),
+      locale: {
+        format: 'YYYY-MM-DD'
+      },
+    });
+
+    var expanded = false;
+    function showCheckBoxes() {
+      console.log("its click")
+      var checkboxes = document.getElementById('checkboxes-ivr');
+      if (!expanded){
+        checkboxes.style.display = "block";
+        checkboxes.classList.remove("d-none")
+        expanded = true;
+      }else {
+        checkboxes.style.display = "none";
+        checkboxes.classList.add("d-none")
+        expanded = false;
+      }  
+    }
+
+    const start_animation = () => {
+      const duration = 15 * 1000,
+  animationEnd = Date.now() + duration,
+  defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+const interval = setInterval(function() {
+  const timeLeft = animationEnd - Date.now();
+
+  if (timeLeft <= 0) {
+    return clearInterval(interval);
+  }
+
+  const particleCount = 50 * (timeLeft / duration);
+
+  // since particles fall down, start a bit higher than random
+  confetti(
+    Object.assign({}, defaults, {
+      particleCount,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+    })
+  );
+  confetti(
+    Object.assign({}, defaults, {
+      particleCount,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+    })
+  );
+}, 250);
+
+    }
+
+    const find_subdispo = async (currentIndex,fd,td) => {
+      try{
+        var currentcard = $('.ivr-fil').eq(currentIndex);
+        currentcard.find('.overlay-wrapper').addClass('visibleloader');
+        const response = await fetch(link+'/fil_sub_attmp',{
+          method : "POST",
+          headers :{
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            "Authorization":`Bearer ${token_val}`
+          },
+          body : JSON.stringify({'fd':fd,"td":td})
+        
+        })
+        const data =await response.json()
+        const x=data.sb
+        const ct=data.data_ct
+        console.log(data.sb ,"get data from",ct)
+        if(x.length >0){
+          $('#checkboxes-ivr').html( `
+            <label for="All" class="checkbox-wrapper">
+              <input type="checkbox" value="All"  id="all-subdispo">
+              <label for="All"><span>All</span> <span class="dispo_count"></span></label>
+            </label>
+            `)
+        }
+        else{
+          $('#checkboxes-ivr').html( 'No subdisposition')
+        }
+        for (i of x){
+          $('#checkboxes-ivr').append(
+            `
+            <label for="${i.sub_disposition}" class="checkbox-wrapper">
+              <input type="checkbox" value="${i.sub_disposition}" name="subdispo" id="${i.sub_disposition}">
+              <label for="${i.sub_disposition}"><span>${i.sub_disposition}</span> <span class="dispo_count">${i.count}</span></label>
+            </label>
+            `
+          )
+        }
+        $(".data_ct").html(ct)
+        $('.overlay-wrapper').eq(currentIndex).removeClass('visibleloader')
+      }
+      catch (error){
+        console.log(error,'error')
+        $('.overlay-wrapper').eq(currentIndex).removeClass('visibleloader')
+        
+      }
+    }
+
+const dataCount = async (currentIndex) => {
+    console.log(currentIndex,'currentindex')
+        try{
+          var currentcard = $('.ivr-fil').eq(currentIndex);
+          console.log(currentcard,"from data count currentcard")
+          currentcard.find('.overlay-wrapper').addClass('visibleloader');
+
+          const startDate = $('.datepick').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          const endDate = $('.datepick').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        
+          let operators = $("select[name='operators']").val()
+          let attempts = $("select[name='attempts']").val()
+          let subdispo = []
+  
+          $("input[name=subdispo]:checkbox:checked").each(function() {
+            subdispo.push($(this).val());
+          })
+          const response = await fetch(link+'/IVRDatacount',{
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+              "Authorization":`Bearer ${token_val}`
+            },
+            body: JSON.stringify({subdispo:subdispo,operators:operators,attempts:attempts,"fdate":startDate,"tdate":endDate}),
+          });
+          if (!response.ok) {
+            throw new Error("Unable to fetch data");
+          }
+    
+          const data = await response.json();
+          x=data.data_count
+          console.log("From data count ",x,currentIndex)
+          $('.data_ct').html(x)
+          $('.overlay-wrapper').eq(currentIndex).removeClass('visibleloader')
+        }
+        catch (error){
+          console.log(error)
+          $('.overlay-wrapper').eq(currentIndex).removeClass('visibleloader')
+        }
+
+      }
+      
+
+      const get_data = async() => {
+        $(".loader__wrapper").css({ display: "block" })
+        try{
+          const startDate = $('.datepick').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          const endDate = $('.datepick').data('daterangepicker').endDate.format('YYYY-MM-DD');
+          let operators = $("select[name='operators']").val()
+          let attempts = $("select[name='attempts']").val()
+          let ivr_no = $("select[name='ivr-file-title']").val()
+          let subdispo = []
+  
+          $("input[name=subdispo]:checkbox:checked").each(function() {
+            subdispo.push($(this).val());
+          })
+          const response = await fetch(link+'/get_data',{
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+              "Authorization":`Bearer ${token_val}`
+            },
+            body: JSON.stringify({subdispo:subdispo,operators:operators,attempts:attempts,"fdate":startDate,"tdate":endDate , "ivr_no":ivr_no}),
+          });
+          if (!response.ok) {
+            throw new Error("Unable to fetch data");
+          }
+          const data = await response.json();
+          x = data.data
+          $('tbody').html('')
+        for (i of x){
+          $('tbody').append(`<tr>
+              <td>${i.list_id}</td>
+              <td>${i.borrowor_name}</td>
+              <td>${i.mobile_no}</td>
+              <td>${i.loan_accountno ? i.loan_accountno : ''}</td>
+              <td>${ i.disposition ? i.disposition : ''  }</td>
+              <td>${i.sub_disposition ? i.sub_disposition : ''}</td>
+              <td>${i.attempted}</td>
+            </tr>`)
+        }
+        sessionStorage.setItem("dataCount",x.length)
+        start_dial()  
+        }catch(error){
+          console.log(error.message)
+        }finally{
+          $(".loader__wrapper").css({ display: "none" })
+        }
+      }
+
+    
+    const start_dial = async() => {
+      response = await fetch(link+'/start_file_IVRexecution',{
+        method : "GET",
+        headers: {
+            "Authorization": `Bearer ${token_val}`, 
+        }
+      })
+      result = await response.json()
+      console.log('start call')
+    }
+    const stop_dial = async() => {
+      response = await fetch(link+'/stop_file_IVRexecution',{
+        method : "GET",
+        headers: {
+            "Authorization": `Bearer ${token_val}`, 
+        }
+        })
+      result = await response.json()
+      console.log('stop call')
+    }
+
+
+
+const applyfilter = async() =>{
+  console.log("apply filter")
+  let dataCount=sessionStorage.getItem('dataCount')
+  let filename=sessionStorage.getItem('ivr-file-name')
+  if (dataCount && filename){
+    console.log(dataCount,filename,"its present")
+    $(".data_ct").html(dataCount)
+    $('.IVR-name').html(filename)
+    $('.ivr-btn').addClass('pause-btn')
+    $('.ivr-btn').text('stop')
+    try {
+      response=await fetch(link+'/fetch_Ivrdata',{
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+              "Authorization":`Bearer ${token_val}`
+            },})
+      const data = await response.json();
+      console.log(data.data,'get data')
+      let x=data.data
+      $('tbody').html('')
+      if (x){
+        for (i of x){
+          console.log(i.lead_forkey['mobile_no'],"in data")
+          $('tbody').append(`<tr>
+              <td>${i.lead_forkey['list_id']}</td>
+              <td>${i.lead_forkey['borrowor_name']}</td>
+              <td>${i.lead_forkey['mobile_no']}</td>
+              <td>${i.lead_forkey['loan_accountno'] ? i.lead_forkey['loan_accountno'] : ''}</td>
+              <td>${ i.lead_forkey['disposition'] ? i.lead_forkey['disposition'] : ''  }</td>
+              <td>${i.lead_forkey['sub_disposition']? i.lead_forkey['sub_disposition'] : ''}</td>
+              <td>${i.lead_forkey['attempted']}</td>
+            </tr>`)
+        }
+      }
+      else{
+          sessionStorage.setItem("dataCount",'')
+          sessionStorage.setItem("ivr-file-name",'')
+        }
+
+    }catch(error){
+      console.log(error.message)
+    }
+  }
+}
+const clearfilters = () => {
+    $(".loader__wrapper").css({ display: "block" })
+    const todayDate = new Date().toISOString().slice(0, 10)
+    $("input[name='fdate']").val(todayDate)
+    $("input[name='tdate']").val(todayDate)
+    $("select[name='subdisposition']").val('').trigger('change')
+    $("select[name='operators']").val('').trigger('change');
+    $("select[name='attempts']").val('').trigger('change');
+    $("select[name='ivr-file-title']").val('').trigger('change');
+    $(".IVR-name").text('')
+    $(".data_ct").text('')
+    $('tbody').html('')
+    $(".loader__wrapper").css({ display: "none" })
+   sessionStorage.setItem("dataCount",'')
+   sessionStorage.setItem("ivr-file-name",'')
+}
+  $(document).ready(function () {
+    // clearfilters()
+    applyfilter()
+    $('.header-title').html("Connect to customer")
+    $('.ivr-fil:first').removeClass('onlyRead')
+    numberOfCard = $('.ivr-fil').length //will give the number of card for the calculation of adding next and prev button
+    $('.ivr-fil:first .filter-submit-div').html(`
+        <i class="fa-solid fa-angles-right next-btn" id="dateRangeDataHandler"></i>
+    `);
+    $('.ivr-fil:first').addClass('transformCss')
+
+    for (let i=0;i<11;i++){
+            $("select[name='attempts']").append(`<option value="${i}">${i}</option>`)
+        }
+  
+
+
+    $(document).on('click','#all-subdispo',function(){
+      console.log('clicked')
+        if(this.checked) {
+            // Iterate each checkbox
+            $('input[name="subdispo"]').each(function() {
+                this.checked = true;                        
+            });
+        } else {
+            $('input[name="subdispo"]').each(function() {
+                this.checked = false;                       
+            });
+        }
+    })
+  
+
+    $(document).on('click','.next-btn',function(){
+      $('.ivr-fil').removeClass('transformCss');
+      $(this).closest('.ivr-fil').addClass('onlyRead')
+      currentIndex  = $(this).closest('.ivr-fil').index() //will get the current index
+      console.log(currentIndex,"CURRENT from next")
+      indexOfDiv = $(this).closest('.ivr-fil').next('.ivr-fil').index()
+      console.log(indexOfDiv,'from next btn')
+      $('.ivr-fil').eq(indexOfDiv).addClass('transformCss')
+      $('.ivr-fil').eq(indexOfDiv).removeClass('onlyRead')
+      $('.filter-submit-div').html('')
+
+      
+      
+      if (indexOfDiv === numberOfCard - 1){
+        $(`.filter-submit-div`).eq(indexOfDiv).html(`
+          <i class="fa-solid fa-angles-left prev-btn datacount"></i>
+        `)
+      }else{
+        $(`.filter-submit-div`).eq(indexOfDiv).html(`
+          <i class="fa-solid fa-angles-left prev-btn datacount"></i>
+          <i class="fa-solid fa-angles-right next-btn datacount"></i>
+        `)
+      }
+      if (currentIndex === 0){
+        const startDate = $('.datepick').data('daterangepicker').startDate.format('YYYY-MM-DD');
+        const endDate = $('.datepick').data('daterangepicker').endDate.format('YYYY-MM-DD');
+
+        // Log the selected start and end dates to the console
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
+
+        $('#all-subdispo').html('')
+    
+        $('select[name=attempts]').val('').trigger('change')
+        $('select[name=operators]').val('').trigger('change')
+        find_subdispo(currentIndex,startDate,endDate) //will update the listids
+      }else if(currentIndex !== numberOfCard - 1) {
+        console.log('called')
+        dataCount(currentIndex)
+      }else{
+        dataCount(currentIndex)
+      }
+
+
+    })
+
+
+    $(document).on('click','.prev-btn',function(){
+      $('.ivr-fil').removeClass('transformCss');
+      $(this).closest('.ivr-fil').addClass('onlyRead')
+      currentIndex = $(this).closest('.ivr-fil').index() //will get the current index
+      indexOfDiv = $(this).closest('.ivr-fil').prev('.ivr-fil').index()
+      console.log(indexOfDiv,'from next btn')
+      $('.ivr-fil').eq(indexOfDiv).addClass('transformCss')
+      $('.ivr-fil').eq(indexOfDiv).removeClass('onlyRead')
+      $('.filter-submit-div').html('')
+      if (indexOfDiv === 0){
+          $('.filter-submit-div').eq(indexOfDiv).html(`
+            <i class="fa-solid fa-angles-right next-btn" id="dateRangeDataHandler"></i>
+          `)
+          $('.filter-submit-div next-btn').eq(indexOfDiv).add
+      }
+      else if (indexOfDiv === numberOfCard - 1){
+        $(`.filter-submit-div`).eq(indexOfDiv).html(`
+          <i class="fa-solid fa-angles-left prev-btn"></i>
+        `)
+      }else{
+        $(`.filter-submit-div`).eq(indexOfDiv).html(`
+          <i class="fa-solid fa-angles-left prev-btn"></i>
+          <i class="fa-solid fa-angles-right next-btn "></i>
+        `)
+      }
+      console.log(currentIndex,'prev',numberOfCard)
+      
+      if (currentIndex !== numberOfCard - 1){
+        console.log('called')
+        // datacount(currentIndex)
+      }
+
+      
+    })
+
+  $(document).on('change','select[name=ivr-file-title]',function(){
+    var selectedOptionText = $(this).find("option:selected").text();
+    if (selectedOptionText) {
+        $(".IVR-name").html(selectedOptionText);
+        $(".ivr-file-name").html(selectedOptionText);
+        sessionStorage.setItem("ivr-file-name",selectedOptionText)
+
+    }
+  })
+
+  $(document).on('click', '.ivr-btn', function () {
+    let data_ct=$(".data_ct").text()
+    let file_title=$('select[name=ivr-file-title]').val()
+
+    if ($('.ivr-btn').hasClass('pause-btn')){
+      console.log('present')
+      $('.ivr-btn').removeClass('pause-btn')
+      $('.ivr-btn').text('start')
+      stop_dial()
+      clearfilters()
+    }else{
+    if( data_ct && data_ct !== '0' && file_title){
+
+      $(".IVR-confirmation").click()
+      }else{
+        alert("Please select data filters ")
+        return
+      }
+    }
+
+    $(document).on("click",".ivr-yes-btn",function(){
+      $('.ivr-btn').addClass('pause-btn')
+      $('.ivr-btn').text('stop')
+      start_animation()
+      get_data()
+    })
+
+    });
+
+    $(document).on("click", function (event) {
+      console.log("Event click")
+    if ($(event.target).parent().attr('id') != "checkboxes-ivr" && $(event.target).parent().attr('class') != 'checkbox-wrapper') {
+      $('#checkboxes-ivr').addClass('d-none')
+    }
+    if ($(event.target).attr('class') == "overselect") {
+      console.log("You");
+      $('#checkboxes-ivr').removeClass('d-none')
+    }
+    });
+})
+
+</script>

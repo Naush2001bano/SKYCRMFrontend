@@ -1,0 +1,326 @@
+<script>
+
+
+  const rshtml = (id,contacted_probablity,name,acno,amount,dt,cn,dispo,color) => {
+return component = `<a href="/cms?id=${id}&render=recovery" class="recovery-wrapper"style="border-left-color:${color}">
+  <input type="hidden" class="id22" value=${id}>
+  <div class="data-card-content probability_percentage">${contacted_probablity}%</div>
+  <div class="">
+<div class="data-card-title">CONTACT</div>
+<div class="data-card-content contact_probability" >PROBABILITY</div>
+</div>
+<div class="">
+<div class="data-card-title"> Name</div>
+<div class="data-card-content">${name}</div>
+</div>
+<div class="">
+<div class="data-card-title">Agreement No.</div>
+<div class="data-card-content2">${acno}</div>
+</div>
+<div class="">
+<div class="data-card-title">Loan Amount</div>
+<div class="data-card-content2">${amount}</div>
+</div>
+<div class="">
+<div class="data-card-title">Contacted Date & Time</div>
+<div class="data-card-content2">${dt}</div>
+</div>
+<div class="">
+<div class="data-card-title">Caller Name </div>
+<div class="data-card-content2">${cn}</div>
+</div>
+<div class="">
+<div class="data-card-title">Sub-disposition </div>
+<div class="data-card-content2">${dispo}</div>
+</div>
+</a>`
+}
+
+
+
+const recovery_count = async() => {
+  try {
+    rem = []
+    $("input[name=remcb]:checkbox:checked").each(function() {
+      rem.push($(this).val());
+    })
+    tdate = $('input[name=tdate]').val()
+    fdate = $('input[name=fdate]').val()
+    sortval = rem
+    let url = 'http://127.0.0.1:8001/filterrs'
+    const response = await fetch(url,{
+      method : "PUT",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({tdate:tdate,fdate:fdate,sortval:sortval})
+    });
+    data = await response.json()
+    console.log(data.count,'recovery count')
+    x = data.count
+    for (var i in x){
+      $('#checkboxess').find(`input[value = "${x[i].sub_disposition}"]`).next().children().next().html(`${x[i].the_count}`)
+    }
+  } catch (error) {
+    console.log(e,'error')
+  }
+}
+
+// function dataSubmit(btnval) {
+//   var data = new FormData();
+
+//   let rem = []
+  
+//   $("input[name=remcb]:checkbox:checked").each(function() {
+//       rem.push($(this).val());
+//   })
+//   console.log(rem,"reeeeeeeeeeee")
+  
+//   data.append('tdate',$('input[name=tdate]').val())
+//   data.append('fdate',$('input[name=fdate]').val())
+//   data.append('sortval',rem)
+  
+//   sessionStorage.setItem('sortval2',rem)
+//   sessionStorage.setItem('rsfdate',$('input[name=fdate]').val())
+//   sessionStorage.setItem('rstdate',$('input[name=tdate]').val())
+
+
+//   $.ajax({
+//       method: 'POST',
+//       headers: {
+//           "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+//       },
+//       url: "/filterrs",
+//       data: data,
+//       datatype:'json',
+//       processData: false,
+//       contentType: false,
+//       beforeSend: function() {
+//           $('.loader__wrapper').css({"display":"block"})
+//       },
+//       success: function (data) {
+//           let x = data.data
+//           console.log(x)
+//           // console.log("reeeemme",rem)
+         
+//           $('.main-data-wrapper').empty()
+          
+//           if (x.length < 1){
+//              $('.loader__wrapper').css({"display":"none"})
+//               return 1
+//           }
+//           if (x != undefined){
+              
+//               $('.bigdiv').css({'min-height':'auto'})
+//           for (var i in x){
+              
+//               probability_percentage = +x[i].contacted_probablity
+//               console.log(typeof probability_percentage, 'probability_percentage');
+//               let color = "#F3A23A"
+//               if (probability_percentage >= 65){
+//                 color="green"
+//               }else if ((probability_percentage <= 35)){
+//                 color="red"
+//               }
+              
+//               let dtFormat = new Intl.DateTimeFormat('en-US',{
+//                               month:'short',
+//                               day:'2-digit',
+//                               year:'numeric',
+//                               hour: 'numeric',
+//                               minute:'numeric',
+//                               second:'numeric',
+//                               hour12:false
+//                           })
+
+//           let d = x[i].contacted_dt
+
+//           d = new Date(d);
+//           d = dtFormat.format(d)
+
+//           amount = x[i].main_amount
+//           amount ? amount = "Rs"+" "+parseInt(amount).toLocaleString("en-US", {style:"currency", currency:"INR",maximumFractionDigits: 0}).replace(/₹/gi, '') : amount = "Rs 0"
+          
+//           $('.main-data-wrapper').append(rshtml(x[i].id,x[i].contacted_probablity,x[i].name,x[i].agreement_no,amount,d,x[i].caller_name,x[i].sub_disposition,color))
+          
+//         }
+//       }
+//       $('.loader__wrapper').css({"display":"none"})
+
+//     },
+//     complete:function(){
+//       recovery_count()
+//     }
+//   })
+// }
+
+const dataSubmit = async(btnval) => {
+  try {
+    $('.loader__wrapper').css({"display":"block"})
+    let url = 'http://127.0.0.1:8001/filterrs'
+    let rem = []
+  
+    $("input[name=remcb]:checkbox:checked").each(function() {
+        rem.push($(this).val());
+    })
+    tdate = $('input[name=tdate]').val()
+    fdate = $('input[name=fdate]').val()
+    sortval = rem
+
+    sessionStorage.setItem('sortval2',rem)
+    sessionStorage.setItem('rsfdate',$('input[name=fdate]').val())
+    sessionStorage.setItem('rstdate',$('input[name=tdate]').val())
+    const response = await fetch(url,{
+      method:"POST",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+      body:JSON.stringify({tdate:tdate,fdate:fdate,sortval:sortval})
+    })
+    const data = await response.json()
+    let x = data.data
+    // console.log("reeeemme",rem)
+    
+    $('.main-data-wrapper').empty()
+    
+    if (x.length < 1){
+        $('.loader__wrapper').css({"display":"none"})
+        return 1
+    }
+    if (x != undefined){
+        
+        $('.bigdiv').css({'min-height':'auto'})
+        for (var i in x){
+            
+            probability_percentage = +x[i].contacted_probablity
+            console.log(typeof probability_percentage, 'probability_percentage');
+            let color = "#F3A23A"
+            if (probability_percentage >= 65){
+              color="green"
+            }else if ((probability_percentage <= 35)){
+              color="red"
+            }
+            
+            let dtFormat = new Intl.DateTimeFormat('en-US',{
+                            month:'short',
+                            day:'2-digit',
+                            year:'numeric',
+                            hour: 'numeric',
+                            minute:'numeric',
+                            second:'numeric',
+                            hour12:false
+                        })
+
+        let d = x[i].contacted_dt
+
+        d = new Date(d);
+        d = dtFormat.format(d)
+
+        amount = x[i].main_amount
+        amount ? amount = "Rs"+" "+parseInt(amount).toLocaleString("en-US", {style:"currency", currency:"INR",maximumFractionDigits: 0}).replace(/₹/gi, '') : amount = "Rs 0"
+        
+        $('.main-data-wrapper').append(rshtml(x[i].id,x[i].contacted_probablity,x[i].name,x[i].agreement_no,amount,d,x[i].caller_name,x[i].sub_disposition,color))
+        
+      }
+    }
+    $('.loader__wrapper').css({"display":"none"})
+  } catch (error) {
+    console.log(error)
+    $('.loader__wrapper').css({"display":"none"})
+  }
+}
+
+const get_dispo = async() => {
+  try {
+    let url = 'http://127.0.0.1:8001/filterrs'
+    const response = await fetch(url,{
+      method:"GET",
+      headers : {
+        "Authorization": `Bearer ${token_val}`,
+        "Content-Type" : "application/json",
+      },
+    });
+    data = await response.json()
+    console.log(data.dispo,'recovery count')
+    x = data.dispo
+    mode = data.mode
+    for (let i in x){
+      console.log(x[i].sub_dispo)
+      $('#checkboxess').append(`<label for="${x[i].sub_dispo}" class="checkbox-wrapper">
+                  <input type="checkbox" value="${x[i].sub_dispo}" name="remcb" id="${x[i].sub_dispo}">
+                  <label for="${x[i].sub_dispo}"><span>${x[i].sub_dispo}</span> <span class="dispo_count"></span></label>
+                </label>`)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+$(document).ready(function(){
+  get_dispo()  
+  recovery_count() 
+  dataSubmit() 
+
+
+
+$('input[name=fdate]').change(function(){
+  dataSubmit()
+})
+$('input[name=tdate]').change(function(){
+  dataSubmit()
+})
+
+$('input[name="remcb"]').click(function(){
+  console.log('clicked')
+  dataSubmit()
+})
+
+///////////////////////////////////////////////progressive start///////////////////////////////////////
+  $('#togglepro').on('change', function() {
+    update_mode("",function(mode){
+      console.log("mode from recovery",mode)
+        if (mode === "Progressive") {
+  
+          $("#togglepro").prop("checked", false);
+          alert("Disabled");
+          return
+        }
+  
+      if ($("#togglepro").is(':checked')) {
+
+        let ls = []
+        $('.id22').each(function(){
+          ls.push($(this).val())
+        })
+        console.log(ls)
+        sessionStorage.setItem('non_attmp_ids', JSON.stringify(ls));
+        sessionStorage.setItem('progressive', JSON.stringify("on"));
+        var progressive = JSON.parse(sessionStorage.getItem('progressive'));
+        var get_id_list = JSON.parse(sessionStorage.getItem('non_attmp_ids'));
+        console.log(get_id_list.length)
+
+        if (progressive == "on" && get_id_list.length > 0){
+          window.location.href = `/cms?id=${get_id_list[0]}&progressive=true&render=recovery`
+        }
+        
+        // Do something when the checkbox is checked
+        
+      }else{
+        sessionStorage.setItem('progressive', JSON.stringify("off"));
+        // sessionStorage.setItem('non_attmp_ids', JSON.stringify("off"));
+        sessionStorage.removeItem('non_attmp_ids');
+        var lsFromSession = JSON.parse(sessionStorage.getItem('non_attmp_ids'));
+        console.log(lsFromSession)
+        var progressive = JSON.parse(sessionStorage.getItem('progressive'));
+        console.log(progressive)
+      }
+      })
+    })
+///////////////////////////////////////////////progressive end///////////////////////////////////////
+
+
+})
+</script>

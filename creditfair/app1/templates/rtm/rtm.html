@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+    section.table-wrapper{
+      background: #F1F5F9;
+      overflow-y: hidden;
+      height: auto;
+      min-height: calc(100vh - 5em);
+      width: calc(100% - 2em);
+      margin: auto;
+      margin-top: 15px;
+    }
+
+    .table-wrapper.queue_screen{
+      height: auto;
+      max-height: calc(100vh - 40em);
+      min-height: calc(100vh - 30em);
+    }
+
+    .header_title{
+      font-weight: 500;
+      font-size: 19px;
+      display: block;
+      margin: 4px 11px;
+      color: #407bd5;
+    }
+
+    .queue_body{
+      overflow: auto;
+      height: 154px;
+    }
+
+    .table-wrapper header {
+      display: grid;
+      grid-template-columns: 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr .5fr .5fr .5fr .5fr .5fr .5fr;
+    }
+    .content_type {
+      display: grid;
+      grid-template-columns: 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr .5fr .5fr .5fr .5fr .5fr .5fr;
+      min-height: 24px;
+    }
+
+    .table-wrapper.queue_screen header,.queue_body .content_type{
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr; 
+    }
+
+    .content_type.Not_Ready {
+    border-left:5px solid #AF0C00;
+    }
+.content_type.Not_Ready .Not_Ready {
+  color: #AF0C00;
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+.content_type.waiting {
+  border-left: 5px solid #FF971C;
+}
+.content_type.waiting .waiting {
+  color: #FF971C;
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+.content_type.idle{
+    border-left: 5px solid #2979FF;
+}
+.content_type.idle .idle {
+  color: #2979FF;
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+
+.content_type.on_call{
+    border-left: 5px solid #00B448;
+
+}
+.content_type.on_call .on_call {
+  color: #00B448;
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+.content_type.wrap-up {
+  border-left: 5px solid #546E7A;
+}
+.content_type.wrap-up .wrap-up {
+  color: #546E7A;
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+.content_type.paused{
+  border-left: 5px solid #EB2004;
+}
+.content_type.paused .paused {
+  color: #EB2004;
+
+  font-weight: 500;
+  letter-spacing: .5px;
+  padding-left: 5px;
+}
+.card-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    width: calc(100% - 2em);
+    margin: auto;
+    margin-top: 15px;
+    gap: 1px 35px;
+}
+.rtm-card{
+    width: 175px;
+    height: 69px;
+    margin-top: 15px;
+    background: #FFFFFF;
+    box-shadow: 0px 3px 9px rgb(167 167 167 / 25%);
+    border-radius: 10px;
+    display: grid;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+.icon-rtm-card{
+    position: absolute;
+    left: 10px;
+    background: white;
+    width: 44px;
+    height: 44px;
+    padding: auto;
+    border-radius: 50%;
+    text-align: center;
+}
+.rtm-icon{
+    margin: auto;
+    margin-top: 6px;
+}
+.rtm-card-title , .rtm-card-count{
+    width: 80%;
+    margin: auto;
+    text-align: end;
+    font-size: 12px;
+    font-weight: 600;
+}
+.rtm-card-count{
+    font-size: 18px;
+    color: #407bd5;
+}
+
+
+.rtm-img-div{
+  width: 80%;
+  height: 90vh;
+  margin: auto;
+  text-align: center;
+}
+.rtm-img-div img {
+  width: 100%;
+  height: 100%;
+}
+.rtm-nouser-img-div{
+  width: 30%;
+  height: 30%;
+  
+  align-items: center;
+}
+.rtm-img{
+  width: 100%;
+  height:100%;
+}
+.no-user-title{
+  font-family: "Roboto";
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.nouser-div-style{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.display-toggle{
+  display: none;
+}
+.table-wrapper-innerdiv{
+  width: 100%;
+  min-width: 700px;
+  overflow: auto;
+}
+</style>
+<section>
+  <div class="card-wrapper display-toggle">
+    <div class="rtm-card" style="border-left: 5px solid #00bcbc;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/totalagent.png'%}"  alt="" class="rtm-icon" ></div>
+      <div class="rtm-card-title" style="color: #00bcbc;">TOTAL</div>
+      <div class="rtm-card-count TotalCount">0</div>
+    </div>
+    <div class="rtm-card" style="border-left: 5px solid #AF0C00;">
+        <div class="icon-rtm-card"><img  src="{% static 'images/notready.svg'%}"  alt="" class="rtm-icon" ></div>
+        <div class="rtm-card-title" style="color: #AF0C00;">NOT READY</div>
+        <div class="rtm-card-count NotReadyCount">0</div>
+    </div> 
+    <div class="rtm-card" style="border-left: 5px solid #2979FF;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/idle.svg'%}"  alt="" class="rtm-icon" ></div>
+      <div class="rtm-card-title" style="color: #2979FF;">IDLE</div>
+    <div class="rtm-card-count IdleCount">0</div>
+    </div>
+    <div class="rtm-card" style="border-left: 5px solid #00B448;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/oncall.svg'%}"  alt="" class="rtm-icon" ></div>
+      <div class="rtm-card-title" style="color: #00B448;">ON CALL</div>
+      <div class="rtm-card-count OnCallCount">0</div>
+    </div>
+    <div class="rtm-card" style="border-left: 5px solid #FF971C;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/hangup.svg'%}"  alt="" class="rtm-icon"  style="margin-top: 15px;"></div>
+      <div class="rtm-card-title" style="color: #FF971C;">HANGUP</div>
+      <div class="rtm-card-count HangUpCount">0</div>
+    </div>
+    <div class="rtm-card" style="border-left: 5px solid #546E7A;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/wrapup.svg'%}"  alt="" class="rtm-icon" ></div>
+      <div class="rtm-card-title" style="color: #546E7A;">WRAPUP</div>
+      <div class="rtm-card-count WrapupCount">0</div>
+    </div>
+    <div class="rtm-card" style="border-left: 5px solid #EB2004;">
+      <div class="icon-rtm-card"><img  src="{% static 'images/break.svg'%}"  alt="" class="rtm-icon" ></div>
+      <div class="rtm-card-title" style="color: #EB2004;">Break</div>
+      <div class="rtm-card-count BreakCount">0</div>
+    </div>
+  </div>
+</section>
+<section class="table-wrapper" id="update_mode">
+  <div class="table-wrapper-innerdiv display-toggle">
+    <header>
+      <span class="search_title">Status</span>
+      <span class="search_title">Time</span>
+      <span class="search_title">Mode</span>
+      <span class="search_title">UserID</span>
+      <span class="search_title">Name</span>
+      <span class="search_title">Extension</span>
+      <span class="search_title">Process</span>
+      <span class="search_title">Calls</span>
+      <span class="search_title">Avg TT</span>
+      <span class="search_title">Contactable</span>
+      <span class="search_title">Not Contactable</span>  
+    </header>
+    <div class="table_body">  
+   
+    </div>
+  </div>
+
+</section>
+<section class="table-wrapper queue_screen">
+  <div style="width: 100%;
+  min-width: 700px;
+  overflow: auto;">
+    <span class="header_title">Queue Screen</span>
+
+    <header>
+      <span class="search_title">Status</span>
+      <span class="search_title">Queue</span>
+      <span class="search_title">Name</span>
+      <span class="search_title">Number</span>
+      <span class="search_title">Queue Time</span>
+  
+     
+    </header>
+    <div class="queue_body">  
+      
+    </div>
+    </div>
+  </div>
+
+</section>
+
+{% include "rtm/rtmajax.html" %}
+{% endblock %}

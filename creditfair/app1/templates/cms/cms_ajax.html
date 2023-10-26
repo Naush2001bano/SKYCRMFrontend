@@ -1,0 +1,555 @@
+<script>
+  get_additional_numbers()
+  get_dispositions2()
+  additional_details_get()
+  historyajax()
+
+  let refresh_confirmation = false
+  let form_submitted = false
+  
+  window.addEventListener("beforeunload", function (event) {
+    if (refresh_confirmation) {
+      event.preventDefault();
+      return event.returnValue = "Case is not submitted";
+    }
+  });
+
+  window.addEventListener("unload", function (event) {
+  // Code to execute after the page is refreshed
+  // ...
+  if (refresh_confirmation) {
+      call_hangup()
+      status = 'Idle';
+      update_values(status)
+    }
+  });
+  
+  $(document).ready(function () {
+    
+    // additional_details_post()
+
+    
+    console.log($('#selected_mobile_no').val(),"euegidgeideigdeig")
+
+    $(document).on("change","#selected_mobile_no",function(){
+      $("input[name=lastdial]").val($(this).val())
+    })
+
+    
+    $(document).on('click','#showcall',function(){
+      $('.history_card').addClass('display-toggle')
+      $('.history_card2').removeClass('display-toggle')
+    })
+    $(document).on('click','#back_btn',function(){
+      $('.history_card').removeClass('display-toggle')
+      $('.history_card2').addClass('display-toggle')
+    })
+
+
+    /////////////additional whatsapp detail toggle////////////
+    
+    $('#whatsapp_icon').click(function(){
+      $('.add_whatsapp_no').toggleClass('display-toggle')
+      add_class_ifnot('.add_mobile_no','display-toggle')
+      add_class_ifnot('.add_address','display-toggle')
+      add_class_ifnot('.add_email','display-toggle')
+    })
+
+    $('select[name=whatsapp_no]').on('change',function(){
+      let sel_val = this.value
+      if (sel_val == "add_no"){
+        $('.whatsappno_select2_wrapper').addClass('display-toggle')
+        $('.whatsapp_new_no_input').removeClass('display-toggle')
+      }
+    })
+
+    $('.whats_arrow').on('click',function(){
+      $('.whatsappno_select2_wrapper').toggleClass('display-toggle')
+      $('.whatsapp_new_no_input').toggleClass('display-toggle')
+    })
+    /////////////additional  whatsapp detail toggle////////////
+
+    /////////////additional  mobile no toggle////////////
+    $('#mobile_icon').click(function(){
+      $('.add_mobile_no').toggleClass('display-toggle')
+      add_class_ifnot('.add_whatsapp_no','display-toggle')
+      add_class_ifnot('.add_address','display-toggle')
+      add_class_ifnot('.add_email','display-toggle')
+      $('div:visible').find('input').focus();
+
+    })
+    /////////////additional  mobile no toggle////////////
+
+    /////////////additional address toggle////////////
+    $('#address_icon').click(function(){
+      $('.add_address').toggleClass('display-toggle')
+      add_class_ifnot('.add_whatsapp_no','display-toggle')
+      add_class_ifnot('.add_mobile_no','display-toggle')
+      add_class_ifnot('.add_email','display-toggle')
+      $('div:visible').find('textarea').focus();
+
+    })
+    /////////////additional address toggle////////////
+    /////////////additional address toggle////////////
+    $('#email_icon').click(function(){
+      $('.add_email').toggleClass('display-toggle')
+      add_class_ifnot('.add_whatsapp_no','display-toggle')
+      add_class_ifnot('.add_mobile_no','display-toggle')
+      add_class_ifnot('.add_address','display-toggle')
+      $('div:visible').find('input').focus();
+    })
+    /////////////additional address toggle////////////
+
+    //////////////////// disposition render dynamically  start  ///////////////////////////////////
+    $('select[name=disposition]').on('change',function(){
+      let current_val = this.value
+      console.log(current_val,"RRRRRRRRRRRRRRRRRRRRRRRRR")
+      if (current_val){
+        console.log("its call")
+        get_dispositions(this.value)
+      }
+    })
+    //////////////////// disposition render dynamically end   ///////////////////////////////////
+    //////////////////// subdisposition option enb/disb start   ///////////////////////////////////
+    $('select[name=subdisposition]').on('change',function(){
+      let current_val = this.value.toLowerCase()
+      console.log(current_val)
+      if (current_val == "promise to pay"){
+        $('.ptp_wrapper').html(ptp_wrapper_html())
+        $('.ptp_wrapper').removeClass('display-toggle')
+        $(".sch_cbk-error").css({"display":"none"})
+        $(".callback-error").css({"display":"none"})
+        $(".paid-mode-error").css({"display":"none"})
+      }else{
+        $('.ptp_wrapper').html('')
+        $('.ptp_wrapper').addClass('display-toggle')
+      }
+      if (current_val == "paid"){
+        $('.paid_wrapper').html(mode_wrapper_html())
+        $('.paid_wrapper').removeClass('display-toggle')
+        $(".sch_cbk-error").css({"display":"none"})
+        $(".callback-error").css({"display":"none"})
+        $(".paid-mode-error").css({"display":"none"})
+      }else{
+        $('.paid_wrapper').html("")
+        $('.paid_wrapper').addClass('display-toggle')
+      }
+      if (current_val == "call back"){
+        $('.callback_wrapper').html(callback_wrapper_html())
+        $(".sch_cbk-error").css({"display":"none"})
+        $(".callback-error").css({"display":"none"})
+        $(".paid-mode-error").css({"display":"none"})
+        $('.callback_wrapper').removeClass('display-toggle')
+      }else{
+        $('.callback_wrapper').html("")
+        $('.callback_wrapper').addClass('display-toggle')
+      }
+      if (current_val == "schedule call"){
+        $('.schedule_call_wrapper').html(schedule_wrapper_html())
+        $('.schedule_call_wrapper').removeClass('display-toggle')
+        datefun()
+        $(".sch_cbk-error").css({"display":"none"})
+        $(".callback-error").css({"display":"none"})
+        $(".paid-mode-error").css({"display":"none"})
+      }else{
+        $('.schedule_call_wrapper').html('')
+        $('.schedule_call_wrapper').addClass('display-toggle')
+      }
+      if (current_val == "ots request"){
+        $('.ots_wrapper').html(ots_wrapper_html())
+        $('.ots_wrapper').removeClass('display-toggle')
+      }else{
+        $('.ots_wrapper').html()
+        $('.ots_wrapper').addClass('display-toggle')
+      }
+      if (current_val == "loan cancellation"){
+        $('.lc_wrapper').html(lc_wrapper_html())
+        $('.lc_wrapper').removeClass('display-toggle')
+      }else{
+        $('.lc_wrapper').html()
+        $('.lc_wrapper').addClass('display-toggle')
+      }
+    })
+   
+    //////////////////// subdisposition option enb/disb end   ///////////////////////////////////
+
+
+    $(document).on('click','input[name=mode]',function(){
+      let c_val= this.value
+      $(".paid-mode-error").css({"display":"none"})
+      if(c_val == "Cheque"){
+        console.log(c_val)
+          $('input[name="cheque_no"]').toggleClass('display-toggle')
+          add_class_ifnot('input[name="online"]','display-toggle')
+        }
+      else if(c_val == "Online"){
+        $('input[name="online"]').toggleClass('display-toggle')
+        add_class_ifnot('input[name="cheque_no"]','display-toggle')
+      }else{
+        add_class_ifnot('input[name="online"]','display-toggle')
+        add_class_ifnot('input[name="cheque_no"]','display-toggle')
+      }
+    })
+
+    $(document).on("change",'input[name=callback_time]',function(){
+      $(".callback-error").css({"display":"none"})
+    })
+    ///////////////////////// additional details validation start///////////////////
+    $('input[name=whatsapp_no_inp]').on('keyup',function(){
+      let curval = this.value
+      console.log(curval.length)
+      curval.length == 10 && $(this).removeClass('blinking-border')
+
+    })
+
+    $('input[name=contact_no]').on('keyup',function(){
+      let curval = this.value
+      console.log(curval.length)
+      curval.length == 10 && $(this).removeClass('blinking-border')
+    })
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    $('input[name="email"]').on('keyup',function(){
+      let curval = this.value
+      console.log(curval.length)
+      emailRegex.test(curval) && $(this).removeClass('blinking-border')    
+    })
+
+    $('#add_whats_no').on('click',function(){
+      let num_inp =$('input[name=whatsapp_no_inp]')
+      console.log("adasdihwghstststs",$('select[name="whatsapp_no"]').val())
+      let conf_val = num_inp
+      if($('select[name="whatsapp_no"]').val() == 'add_no'){
+        if (num_inp.val().length != 10){
+          num_inp.addClass('blinking-border')
+          return
+        }
+        // additional_details_post()
+      }
+      if($('select[name="whatsapp_no"]').val()){
+        conf_val = $('select[name="whatsapp_no"]').val()
+        //  additional_details_post()
+        $('.modal__title').html('Mobile Confirmation')
+        $('.mobconfirm').html(conf_val)
+        $('.open-modal').click()
+
+      }
+    })
+
+    $('#add_address').on('click',function(){
+      let num_inp =$('textarea[name=address]')
+      if (num_inp.val().length < 1){
+        num_inp.addClass('blinking-border')
+        return
+      }
+      $('.modal__title').html('Address Confirmation')
+      $('.mobconfirm').html(num_inp.val())
+      $('.open-modal').click()
+    })
+
+    $('#add_con_no').on('click',function(){
+      let num_inp =$('input[name=contact_no]')
+      if (num_inp.val().length != 10){
+        num_inp.addClass('blinking-border')
+        return
+      }
+      $('.open-modal').click()
+      $('.modal__title').html('Mobile Confirmation')
+      console.log("callllllfunctionnnn",num_inp)
+      
+      $('.mobconfirm').html(num_inp.val())
+    })
+
+
+    $('#add_email').on('click',function(){
+      let num_inp =$('input[name=email]')
+      if (!emailRegex.test(num_inp.val())){
+        num_inp.addClass('blinking-border')
+        return
+      }
+      $('.modal__title').html('Email Confirmation')
+      $('.mobconfirm').html(num_inp.val())
+      $('.open-modal').click()
+      console.log("callllllfunctionnnn")
+    })
+
+    $('#submitme').click(function(){
+      additional_details_post()
+    })
+
+    ///////////////////////// additional details validation end/////////////////////
+
+
+    // ////////////////////////RTM starts//////////////////////////////////////////
+    var callCount = 0;
+  var totalElapsed = 0;
+  var status = 'Not Ready';
+  var timerId;
+  var startTime;
+  userridd=$("input[name=iddddddd]").val()
+  console.log(userridd,"userridd")
+  // Load previous data from local storage
+  var today = new Date().toLocaleDateString();
+  var userId = userridd // Assuming this function returns the user ID
+  var key = today + '-' + userId;
+  var data = JSON.parse(localStorage.getItem(key));
+  console.log(userId,"userId","userId")
+  if (data) {
+    callCount = data.callCount;
+    totalElapsed = data.totalElapsed;
+    status = data.status;
+    $('#call-count').text(callCount);
+    $('#status').text(status);
+    var avgTime = totalElapsed / callCount;
+    var avgMinutes = Math.floor(avgTime / 60000);
+    var avgSeconds = Math.floor((avgTime % 60000) / 1000);
+    var avgTimeStr = ('0' + avgMinutes).slice(-2) + ':' + ('0' + avgSeconds).slice(-2);
+    $('#avg-time').text(avgTimeStr);
+    
+  }
+
+  
+  $(document).on('click','#start-btn',function() {
+    console.log("btn click for RealTime RTMMMMMMMMMMMMMMMMMMMMM")
+    // Start the timer
+    startTime = Date.now();
+    // timerId = setInterval(function() {
+      var elapsedTime = Date.now() - startTime;
+      var minutes = Math.floor(elapsedTime / 60000);
+      var seconds = Math.floor((elapsedTime % 60000) / 1000);
+      var timeStr = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+      $('#timer').text(timeStr);
+      
+      var id = $(this).parent().next().next().next().val();
+
+  });
+    // ////////////////////////RTM starts//////////////////////////////////////////
+
+    /////////////////////////////////  submit formmm startttt   //////////////////////////////
+    $('select[name=disposition]').on('change',function(){
+      $('.disposition_wrapper').find('.select2-selection--single').removeClass('blinking-border')
+    })
+    $('select[name=subdisposition]').on('change',function(){
+      $('.subdisposition_wrapper').find('.select2-selection--single').removeClass('blinking-border')
+    })
+    $('textarea[name=remark]').on('keyup',function(){
+      $(this).removeClass('blinking-border')
+    })
+    $(document).on('keyup',"input[name=ptp_amount]",function(){
+      $(this).removeClass('blinking-border')
+    })
+    $(document).on('keyup',"input[name=paid_amt]",function(){
+      $(this).removeClass('blinking-border')
+    })
+    $(document).on('change',"input[name=ptp_date]",function(){
+      $(this).removeClass('blinking-border')
+    })
+    $(document).on('change',"input[name=schdatetime]",function(){
+      $(this).removeClass('blinking-border')
+      $(".sch_cbk-error").css({"display":"none"})
+    })
+
+    $('.submit__btn').on('click',function(){
+      let dispo = $('select[name=disposition]').val()
+      let subdispo = $('select[name=subdisposition]').val()
+      let remark= $('textarea[name=remark]').val()
+      let ptp_amt=$("input[name=ptp_amount]").val()
+      let paid_amt=$("input[name=paid_amt]").val()
+      let paid_mode=$("input[name=mode]:checked").val()
+      let ptp_date=$("input[name=ptp_date]").val()
+      let cbk_time=$("input[name=callback_time]:checked").val()
+      let sch_cbk=$("input[name=schdatetime]").val()
+
+      console.log("sdjfgdsfdsgyugfeuf ebf vslajsqwoebq ddni",ptp_date,paid_mode)
+      // console.log(dispo,"dis",subdispo,"subdis",remark,"remark",ptp_date,"asdasd",ptp_amount,callback_time,"callback_time",schdatetime,"ots",ots_amount,mode)
+
+      if (!dispo){
+        console.log("Invalid")
+        $('.disposition_wrapper').find('.select2-selection--single').addClass('blinking-border')
+        return
+      }else if(!subdispo){
+        $('.subdisposition_wrapper').find('.select2-selection--single').addClass('blinking-border')
+        console.log("subinv")
+        return
+
+      }else if(subdispo=="Promise To Pay" && ptp_date.length < 1){
+        $("input[name=ptp_date]").addClass('blinking-border')
+        return
+      }else if(subdispo=="Promise To Pay" && ptp_amt.length < 1){
+        $("input[name=ptp_amount]").addClass('blinking-border')
+        return
+      }else if(subdispo=="Paid" && paid_amt.length < 1){
+        $("input[name=paid_amt]").addClass('blinking-border')
+        return
+      }else if(subdispo=="Paid" && (paid_mode === undefined || paid_mode.length < 1)){
+        $(".paid-mode-error").css({"display":"block"})
+        return
+      }else if(subdispo=="Call Back" && (cbk_time === undefined || cbk_time.length < 1)){
+        $(".callback-error").css({"display":"block"})
+        return
+      }else if(subdispo=="Schedule Call" && (sch_cbk === undefined || sch_cbk.length < 1)){
+        $("input[name=schdatetime]").addClass('blinking-border')
+        $(".sch_cbk-error").css({"display":"block"})
+        return
+      }else if(remark.length < 1){
+        $('textarea[name=remark]').addClass('blinking-border')
+        return
+      }
+
+      console.log(refresh_confirmation,"refresssssshhhh")
+      refresh_confirmation = false
+      console.log(refresh_confirmation,"refresssssshhhh")
+
+      $('.bts2').click()
+      fivesec_timer()
+
+    })
+    
+    $('#finalsubbtn').click(function(){
+      status = 'Idle';
+      update_values(status) 
+      var sub_disval=$("select[name=subdisposition]").val()
+      var lead_id = $('input[name="lead_id"]').val()
+      console.log(sub_disval,"before submit")
+      if (sub_disval == "Call Back" || sub_disval == "Schedule Call"){
+        let get_notificationlist2 = sessionStorage.getItem("notificationlist")
+        if(get_notificationlist2){
+        get_notificationlist2=get_notificationlist2.split(",")
+        console.log(get_notificationlist2,"FROM CMS PAGE")
+        if (get_notificationlist2.includes(String(lead_id))){
+          // console.log(typeof(get_notificationlist2))
+          newNotificationList = get_notificationlist2.filter(i=>{return i!=lead_id})
+          console.log(newNotificationList,"asdasdasdiajdsj")
+          sessionStorage.setItem("notificationlist",newNotificationList)
+        }
+      }
+      }
+      if (!form_submitted){
+        submit_form()
+      }
+      form_submitted = true
+      queue_unpaused()
+    })
+    /////////////////////////////////  submit formmm enddddd   //////////////////////////////
+    
+    /////////////////////////////////  calling ajaxxxxxx start   //////////////////////////////
+    $(".callcontact").click(function(){
+      queue_paused()
+
+      console.log("calllinf",)
+      pno = $('select[name=select_mobile_no]').val()
+      console.log(pno)
+      $('.sidebar__overlay').removeClass("display-toggle")
+      $('.callcontact').css({'pointer-events':"none"})
+      $('.ov-text').html("Call Placing...")
+      if (pno){
+        $('.overlay span:nth-child(2)').text($('select[name=select_mobile_no]').val().substring(0,11))
+      }
+      $('.overlay').addClass('visibility')
+      $('.Agent').addClass('notvisible')
+        refresh_confirmation = true
+        console.log(refresh_confirmation,"calllling refreshhhh")
+        page_refreshed()
+        dial_call()
+      // queue_paused()
+ 
+    })  
+
+
+    $(document).on('click','.contact1',function(){
+      call_hangup()
+      $('.submit__btn').removeAttr('disabled')
+      clearInterval(myInterval)
+      $('.overlay').removeClass('visibility')
+      $('.Agent').removeClass('notvisible')
+      $(".callmsg").css({"display":"none"})
+      $(".main-disposition-boxes").css({"display":"block"})
+      toast('Call Ended from outbound')
+      $('.sidebar').css({"background":"#047BD5"})
+      
+    })
+    /////////////////////////////////  calling ajaxxxxxx end  //////////////////////////////
+    
+
+    
+    ///////////////////////////////////progressive//////////////////////////////////
+    
+ 
+    const progressive_status = `{{progressive}}`
+    const updated_mode=`{{updated_mode}}`
+    const currentUrl = window.location.href;
+    console.log(progressive_status,"ststststststsystustsust")
+
+    var progressive = JSON.parse(sessionStorage.getItem('progressive'));
+    var get_id_list = JSON.parse(sessionStorage.getItem('non_attmp_ids'));
+
+    if (progressive == "on" || updated_mode == "Progressive"){
+
+    $('.pro_confirm').html(`
+      <input type="checkbox"  value="yes" style="vertical-align: middle;" name="checking" id="checking">
+      <label class="finalmsg" for="checking">check if you want to quit progressive</label><br>`)
+    
+      $('.overlay span:nth-child(2)').text($('input[name="lastdial"]').val().substring(0,11))
+      // $('#finalsubbtn').prop('type',"button")
+      // $('#finalsubbtn').addClass('submit_ajax_form')
+
+
+    }
+
+    if (progressive == "on" || currentUrl.includes("progressive")){
+      $('.callcontact').click()
+    }
+
+    $(document).on('change','#checking',function(){
+      if($(this).is(':checked')){
+        sessionStorage.setItem('progressive', JSON.stringify("off"));
+        sessionStorage.setItem('super_pro', JSON.stringify("off"))
+        console.log("checkkkkkkkkeded")
+      }else{
+        sessionStorage.setItem('progressive', JSON.stringify("on"));
+        sessionStorage.setItem('super_pro', JSON.stringify("on"))
+        console.log('unchekeddddd')
+      }
+    })
+
+    ///////////////////////////////////progressive//////////////////////////////////
+    
+
+
+  // Stop button click handler
+  $(document).on("click",'#mydisconnect', function() {
+ // Stop the timer
+    console.log(callCount,"counttttttttttttttttttttttttttttttttt")
+    clearInterval(timerId);
+    var elapsedTime = Date.now() - startTime;
+    totalElapsed += elapsedTime;
+    var minutes = Math.floor(totalElapsed / 60000);
+    var seconds = Math.floor((totalElapsed % 60000) / 1000);
+    var timeStr = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+    status = 'Wrap-up';
+
+    callCount++;
+
+
+    // Calculate the average time
+    var avgTime = totalElapsed / callCount;
+    var avgMinutes = Math.floor(avgTime / 60000);
+    var avgSeconds = Math.floor((avgTime % 60000) / 1000);
+    var avgTimeStr = ('0' + avgMinutes).slice(-2) + ':' + ('0' + avgSeconds).slice(-2);
+    var today = new Date().toLocaleDateString();
+    var key = today + '-' + userId;
+    data = {
+      userId: userId,
+      callCount: callCount,
+      totalElapsed: totalElapsed,
+      status: status
+    };
+    localStorage.setItem(key, JSON.stringify(data));
+
+    update_values(status, callCount, avgTimeStr);
+  
+    console.log(status, callCount, avgTimeStr);
+  });
+  });
+</script>

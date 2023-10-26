@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% csrf_token %}
+<style>
+  .filter-wrapper {
+    margin-bottom: 0;
+  }
+
+  .table-wrapper {
+    height: calc(100vh - 129px)
+  }
+
+  .switch {
+    width: auto;
+    height: auto;
+  }
+
+  .progressive_wrapper {
+    display: grid;
+    grid-template-columns: .2fr 1fr;
+    align-items: center;
+    width: 200px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .no_count {
+    font-size: 12px;
+    font-weight: 500;
+    text-align: end;
+  }
+  .display-toggle{
+    display: none;
+  }
+</style>
+<main class="main-non-attempted">
+  <div class="non_attempt_select_wrapper">
+
+    <div class="select_user display-toggle" >
+
+    </div>
+    
+    <div class="filter-wrapper SelectList_id">
+     
+    </div>
+   
+    <div class="no_count">Number of Data <span class="data_count"></span></div>
+
+    {% if request.user.user_level == 1 %}
+    <div class="progressive_wrapper">
+      <label class="switch">
+        <input type="checkbox" id="togglepro">
+        <span class="slider round"></span>
+      </label>
+      <span class="pro_span">Progressive Dialing</span>
+    </div>
+    {% endif %}
+
+
+  </div>
+
+  <div class="table-wrapper table-responsive">
+    <table class="table table-borderless  rounded" id="exportthis">
+      <thead class="sticky-top">
+        <tr>
+          <th scope="col">Lead id</th>
+          <th scope="col">Borrower Name</th>
+          <th scope="col">Phone no.</th>
+          <th scope="col" class="sortable-numeric">Main Amount <i class="fas fa-sort"></i></th>
+          <th scope="col" class="sortable">Due Date <i class="fas fa-sort"></i></th>
+          <th scope="col">Loan no.</th>
+          <th scope="col">Caller ID</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+  $('.header-title').html("Non Attempted")
+
+
+
+  async function agn() {
+    var data = new FormData();
+   
+    console.log( $("select[name=list-select]").val(),"adsdsd")
+    try {
+      const token = localStorage.getItem('token');
+      // console.log(token,'token')
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      const response = await fetch("http://127.0.0.1:8001/non_attempted_data", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({"agent":$("select[name=np-select]").val(),"list_id":$("select[name=list-select]").val()}),
+      });
+
+      if (!response.ok) {
+        // Handle the error here, e.g., throw an exception or display an error message
+
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return;
+      }
+
+      const jsonData = await response.json();
+      user_level=jsonData.user_level
+      let v = jsonData.data;
+      let count = jsonData.count;
+      console.log(v, 'vvvvvvvvvv',user_level,count)
+      // if (+user_level === 9){
+      $(".data_count").text(count);
+      // }
+      output = '';
+      $('tbody').empty();
+
+      for (var i in v) {
+        $("tbody").append(`
+                <tr class='clickable-row dashhover' data-href="/cms?id=${v[i].id}&render=non_attempted" style="cursor: pointer;">
+                    <td style="font-size: 12px;">${v[i].id}<input type="hidden" class="id22" value=${v[i].id}></td>
+                    <td style="font-size: 12px;">${v[i].name}</td>
+                    <td style="font-size: 12px;">${v[i].mobile_no}</td>
+                    <td style="font-size: 12px;">${v[i].main_amount != null ? v[i].main_amount : ""}</td>
+                    <td style="font-size: 12px;">${v[i].due_date != null ? v[i].due_date : ""}</td>
+                    <td style="font-size: 12px;">${v[i].agreement_no}</td>
+                    <td style="font-size: 12px;text-transform: uppercase;">${v[i].caller_name}</td>
+                </tr>
+            `);
+      }
+
+      $('.loader__wrapper').css({ "display": "none" });
+    } catch (error) {
+      // Handle any other errors that might occur during the fetch or processing of the response.
+      console.error(error);
+    }
+  }
+
+
+  async function non_att() {
+    try {
+      const token = localStorage.getItem('token');
+      // console.log(token,'token')
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      const response = await fetch("http://127.0.0.1:8001/non_attempted", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Authorization": `Bearer ${token}`,
+        },
+
+      });
+      if (!response.ok) {
+        // Handle the error here, e.g., throw an exception or display an error message
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return;
+      }
+
+      const jsonData = await response.json();
+      let u = jsonData.u;
+      let l_id = jsonData.l_id;
+      let user_level=jsonData.user_level;
+
+      console.log(u, 'uuuuuuuuuuuuuuu', l_id, 'l_idl_id',user_level,'user_level')
+      $('.SelectList_id').removeClass("display-toggle")
+      $(".SelectList_id").append(` <p class="m-0">Select List_id</p>
+      <div class="select2-wrapper">
+        <select class="np-select" name="list-select" style="width: 100%;">
+          <option value="all">Select</option>
+          ${l_id.map((i)=>`<option value="${i.listid}">${i.listid}</option>`)}
+          
+        </select>
+      </div>`)
+    //   <div class="filter-wrapper SelectList_id">
+     
+    // </div>
+      if (+user_level === 9){
+        $('.select_user').removeClass("display-toggle")
+
+        $('.select_user').append(`<div class="filter-wrapper">
+          <p class="m-0">Select Agent Name</p>
+          <div class="select2-wrapper">
+            <select class="np-select" name="np-select" style="width: 100%;">
+              <option value="">Select</option>
+              ${u.map((i)=>`<option value="${i.username}">${i.username}</option>`)}
+            </select>
+          </div>
+        </div>`)
+        
+      }
+      agn()
+
+      $('.np-select').select2({
+    minimumResultsForSearch: Infinity
+  })
+      // Create the HTML content you want to append
+      
+    }
+    catch (error) {
+      // Handle any other errors that might occur during the fetch or processing of the response.
+      console.error(error);
+    }
+
+  }
+
+  $(document).ready(function () {
+    non_att()
+    $(".non-atmp").addClass("active-page")
+    $(document).on('click', '.clickable-row', function () {
+      window.location = $(this).data("href");
+    });
+
+    $(document).on('change','select[name=np-select]',function () {
+      console.log("change", $("select[name=np-select]").val())
+      agn()
+    })
+
+    $(document).on('change',"select[name=list-select]",function () {
+      agn()
+    })
+
+
+
+    ///////////////////////////////////////////////progressive start///////////////////////////////////////
+    $('#togglepro').on('change', function () {
+
+      $(document).on("change", "#togglepro", function (e) {
+        update_mode("", function (mode) {
+          if (mode === "Progressive") {
+            // Mode is "Progressive", uncheck and disable the checkbox
+            $("#togglepro").prop("checked", false);
+            alert("Disabled");
+            return
+          } else {
+            console.log("cdskbvdvjhb itssss onnnnnn ")
+            // Mode is not "Progressive", enable and check the checkbox
+            $("#togglepro").prop("checked", true);
+          }
+
+          if ($('#togglepro').is(':checked')) {
+
+            let ls = []
+            $('.id22').each(function () {
+              ls.push($(this).val())
+            })
+            console.log(ls)
+            localStorage.setItem('non_attmp_ids', JSON.stringify(ls));
+            localStorage.setItem('progressive', JSON.stringify("on"));
+            var progressive = JSON.parse(localStorage.getItem('progressive'));
+            var get_id_list = JSON.parse(localStorage.getItem('non_attmp_ids'));
+            console.log(get_id_list.length)
+
+            if (progressive == "on" && get_id_list.length > 0) {
+              window.location.href = `/cms?id=${get_id_list[0]}&progressive=true&render=non_attempted`
+            }
+
+            // Do something when the checkbox is checked
+
+          } else {
+            localStorage.setItem('progressive', JSON.stringify("off"));
+            // localStorage.setItem('non_attmp_ids', JSON.stringify("off"));
+            localStorage.removeItem('non_attmp_ids');
+            var lsFromSession = JSON.parse(localStorage.getItem('non_attmp_ids'));
+            console.log(lsFromSession)
+            var progressive = JSON.parse(localStorage.getItem('progressive'));
+            console.log(progressive)
+
+          }
+        })
+
+        console.log("toggler", mode);
+
+
+      })
+      ///////////////////////////////////////////////progressive end///////////////////////////////////////
+
+    })
+
+
+    // sorting data main_amount and due date wise asc dec
+    $(".sortable-numeric").click(function () {
+      console.log('its call')
+      const column = $(this).index();
+      const $tbody = $(this).closest('table').find('tbody');
+      const rows = $tbody.find('tr').toArray().sort(compareNumeric(column));
+      console.log(column, rows, 'rowwwwwww')
+
+
+      if ($(this).hasClass("desc")) {
+        $(this).removeClass("desc");
+        rows.reverse();
+      } else {
+        $(this).addClass("desc");
+      }
+
+      $tbody.empty().append(rows);
+    });
+
+    function compareNumeric(column) {
+      return function (rowA, rowB) {
+        const valA = parseFloat($(rowA).children('td').eq(column).text().replace(/[^0-9.-]+/g, '')); // Parse as float
+        const valB = parseFloat($(rowB).children('td').eq(column).text().replace(/[^0-9.-]+/g, '')); // Parse as float
+
+        return valA - valB;
+      };
+    }
+
+    $(".sortable").click(function () {
+      const column = $(this).index();
+      const $tbody = $(this).closest('table').find('tbody');
+      const rows = $tbody.find('tr').toArray().sort(compareElements(column));
+
+
+      if ($(this).hasClass("desc")) {
+        $(this).removeClass("desc");
+        rows.reverse();
+      } else {
+        $(this).addClass("desc");
+      }
+
+      $tbody.empty().append(rows);
+    });
+
+    function compareElements(column) {
+      return function (rowA, rowB) {
+        const valA = $(rowA).children('td').eq(column).text();
+        const valB = $(rowB).children('td').eq(column).text();
+        return valA.localeCompare(valB);
+      };
+    }
+    // sorting data main_amount and due date wise asc dec end
+
+  })
+</script>
+{% endblock content %}

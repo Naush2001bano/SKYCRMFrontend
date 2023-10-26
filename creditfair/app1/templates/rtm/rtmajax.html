@@ -1,0 +1,358 @@
+{% load static %}
+<script>
+
+function get_time_differnece(time1,time2){
+    // time1 = 
+    console.log(time1,time2)
+    const [h1, m1, s1, ms1] = time1.split(/[:.]/).map(Number);
+    const time1InMs = (h1 * 3600 + m1 * 60 + s1) * 1000 + ms1;
+
+    // Convert time2 to milliseconds
+    const [h2, m2, s2] = time2.split(":").map(Number);
+    const time2InMs = (h2 * 3600 + m2 * 60 + s2) * 1000;
+
+    // Calculate the difference in milliseconds
+    const diffInMs = time2InMs - time1InMs;
+
+    // Convert the difference back to the "hh:mm:ss" format
+    const diffInSeconds = diffInMs / 1000;
+    const diffHours = Math.floor(diffInSeconds / 3600).toString().padStart(2, "0");
+    const diffMinutes = Math.floor((diffInSeconds % 3600) / 60).toString().padStart(2, "0");
+    const diffSeconds = Math.floor(diffInSeconds % 60).toString().padStart(2, "0");
+
+    return `${diffHours}:${diffMinutes}:${diffSeconds}`;
+}
+
+
+    const not_ready = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component = ` <div class="content_type Not_Ready" >
+            <span class="search_content Not_Ready">Not Ready</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>`
+    }
+
+    const waiting = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component = ` <div class="content_type waiting" >
+            <span class="search_content waiting">Hangup</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>`
+    }
+
+
+    const idle = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component =`  <div class="content_type idle" >
+            <span class="search_content idle">Idle</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>`
+    }
+    const on_call = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component =`<div class="content_type on_call" >
+            <span class="search_content on_call">On Call</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>
+        `} 
+
+    const wrap_up = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component = ` <div class="content_type wrap-up" >
+            <span class="search_content wrap-up">Wrap up</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>`
+    }
+    const paused = (status,event,mode,userid,name,extension,camp,calls,avgtt,con,noncon) => {
+        return component =` <div class="content_type paused" >
+            <span class="search_content paused">${status}</span>
+            <span class="search_content">${event}</span>
+            <span class="search_content">${mode}</span>
+            <span class="search_content">${userid}</span>
+            <span class="search_content agent_name_call_mon">${name}</span>
+            <span class="search_content agent_extension">${extension}</span>
+            <span class="search_content">${camp}</span>
+            <span class="search_content">${calls}</span>
+            <span class="search_content">${avgtt}</span>
+            <span class="search_content">${con}</span>
+            <span class="search_content">${noncon}</span>
+        </div>
+        `
+    }
+
+    const queue_screen_html = (status,event,quene_no,name,number,) => {
+        return component =` <div class="content_type idle">
+            <span class="search_content Not_Ready">${status}</span>
+            <span class="search_content">${quene_no}</span>
+            <span class="search_content">${number}</span>
+            <span class="search_content">${name}</span>
+            <span class="search_content">${event}</span>
+
+        </div>
+        `
+    }
+
+
+    const queue_screen =async () => {
+        try{
+            const response = await fetch(link+"/queue_screen",{
+            headers : {
+                "Authorization": `Bearer ${token_val}`,
+                "Content-Type" : "application/json",
+            }
+        })
+        if (!response.ok){
+            throw new Error("error")
+        }
+        const result = await response.json()
+        if (result){
+            const currentTime = new Date(`${result.current_dt}`);
+            currentTime.setSeconds(currentTime.getSeconds() + 1);
+            currentTimeString = currentTime.toLocaleTimeString('en-US', {hour12: false});
+            let x = result.data
+            let current_dt=result.dt
+            console.log(x,"details",x.length)
+            if (x.length == 0 ){
+                $('.rtm_div').css({'min-height':"calc(100vh - 20em) "})
+                $('.queue_screen').css({'display':'none'})
+            }else{
+                $('.rtm_div').css({'min-height':"calc(100vh - 5em) "})
+                $('.queue_screen').css({'display':'grid'})
+
+            }
+            for (var i in x){
+                let d = x[i].income_date
+                const time = d.split('T')[1].slice(0,11); 
+                diffTime = get_time_differnece(time,currentTimeString)
+                $('.queue_body').append(queue_screen_html("Queue",diffTime,x[i].called,x[i].caller))
+            }   
+        }
+        }catch(error){
+            console.log(error)
+        }
+    }
+    
+const rtm =async () => {
+    try{
+        const response = await fetch(link+"/rtm_table",{
+            headers : {
+                "Authorization": `Bearer ${token_val}`,
+                "Content-Type" : "application/json",
+            }
+        })
+        if (!response.ok){
+            throw new Error("error")
+        }
+        const result = await response.json()
+         // Get current time string
+         console.log("current_dt",result.current_dt,"current")                   
+            const currentTime = new Date(`${result.current_dt}`);
+            currentTime.setSeconds(currentTime.getSeconds() + 1);
+            currentTimeString = currentTime.toLocaleTimeString('en-US', {hour12: false});
+            
+            let x = result.data
+            let current_dt=result.current_dt
+            let notready_ct=0
+            let idle_ct=0
+            let oncall_ct=0
+            let hangup_ct=0
+            let warpup_ct=0
+            let break_ct=0
+            console.log(x,"RTM",current_dt)
+            $('.table_body').html(" ")
+            if (x.length ===0 ) {
+                    console.log("its an empty")
+                    $("section").html("")
+                    $("#update_mode").html(`<div class="rtm-nouser-img-div"><img src="{% static 'images/nocall.png'%}" alt="" class="rtm-img"><div class="no-user-title">No user Loggedin at th moment </div></div>`)
+                    $("#update_mode").addClass("nouser-div-style")
+                    return
+                }
+            $("#update_mode").removeClass("nouser-div-style")
+            $(".card-wrapper").removeClass("display-toggle")
+            $(".table-wrapper-innerdiv").removeClass("display-toggle")
+
+            for (var i in x){                 
+                
+                let d = x[i].event
+                diffTime = get_time_differnece(d,currentTimeString)
+                if (x[i].status == "Not Ready"){
+                    
+                    $('.table_body').append(not_ready(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    notready_ct++
+                }
+                else if(x[i].status == "waiting"){
+                    
+                    $('.table_body').append(waiting(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    hangup_ct++
+                }
+                else if(x[i].status == "Idle"){
+    
+                    $('.table_body').append(idle(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    idle_ct++
+                }
+                else if(x[i].status == "On Call"){
+                    
+                    $('.table_body').append(on_call(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    oncall_ct++
+                }
+                else if(x[i].status == "Wrap-up"){
+                    
+                    $('.table_body').append(wrap_up(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    warpup_ct++
+                }
+                else {
+                    sessionStorage.setItem('status',x[i].status)
+        
+                    $('.table_body').append(paused(x[i].status,diffTime,x[i].mode,x[i].username,x[i].first_name,x[i].extension,x[i].process,x[i].calls,x[i].avgTT,x[i].contacted,x[i].noncontacted))
+                    break_ct++
+                }
+                let total_ct=notready_ct+idle_ct+oncall_ct+hangup_ct+warpup_ct+break_ct
+                $(".NotReadyCount").text(notready_ct)
+                $(".IdleCount").text(idle_ct)
+                $(".OnCallCount").text(oncall_ct)
+                $(".HangUpCount").text(hangup_ct)
+                $(".WrapupCount").text(warpup_ct)
+                $(".BreakCount").text(break_ct)
+                $(".TotalCount").text(total_ct)
+            }          
+            $('.loader__wrapper').css({"display":"none"})
+            
+            setTimeout(function(){
+                rtm()
+            },3000)
+    }catch(error){
+
+    }
+}
+
+   const call_monitor = async (monitor_to,mode)=>{
+    try{
+        const response = await fetch(link+"/call_monitor",{
+            method :"POST",
+            headers:{
+                "Authorization": `Bearer ${token_val}`,
+                "Content-Type" : "application/json",
+            },
+            body:JSON.stringify({monitor_to:monitor_to,mode:mode })
+        })
+        const result = await response.json()
+
+    }catch(error){
+        console.log(error)
+    }
+   }
+   const call_monitor_hangup = async ()=>{
+    try{
+        const response = await fetch(link+"/call_monitor_hangup",{
+            method :"POST",
+            headers:{
+                "Authorization": `Bearer ${token_val}`,
+                "Content-Type" : "application/json",
+            },
+        })
+        const result = await response.json()
+
+    }catch(error){
+        console.log(error)
+    }
+   }
+    
+
+    $(document).ready(function () {
+        $(".header-title").html("Real Time Monitor")
+        rtm()
+        queue_screen()
+        
+
+    /////////////////////# Call monitor  events starts#///////////////////////////////////////////////#
+        let mode=""  
+        let agent_ext=""     
+        $('.listenclick').click(function(){
+            console.log('hiiiiiiiiiiiiiiiiiiiiiii')
+            mode='listen'
+            console.log(mode,'modeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+            $('#confirmcon7').click()
+            $('.lwbmode').text(mode)
+            $('.lwbiconnn').html('<i class="fa-solid fa-microphone"></i>')
+            call_monitor(agent_ext,mode)
+        })
+        $('.wisperclick').click(function(){
+            console.log('hiiiiiiiiiiiiiiiiiiiiiii')
+            $('#confirmcon7').click()
+            mode='whisper'
+            $('.lwbmode').text(mode)
+            $('.lwbiconnn').html('<i class="fa-solid fa-headphones"></i>')
+            call_monitor(agent_ext,mode)
+            console.log(mode,'modeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+        })
+        $('.barginlick').click(function(){
+            console.log('hiiiiiiiiiiiiiiiiiiiiiii')
+            $('#confirmcon7').click()
+            mode='barge'
+            $('.lwbmode').text(mode)
+            call_monitor(agent_ext,mode)
+            $('.lwbiconnn').html('<i class="fa-solid fa-user-group"></i>')
+             console.log(mode,'modeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+        })
+        $(document).on('click','.on_call',function(){
+            console.log('hello rtm')
+
+            $('#confirmcon5').click()
+            var cusname = $(this).find('.agent_name_call_mon').text();
+            agent_ext = $(this).find('.agent_extension').text();
+            console.log(cusname, 'customer name',agent_ext);  
+            $('.agentto').text(cusname)
+            $('.addnAhent').text(cusname)
+            
+        })
+
+        $(document).on("click",".callmonitor_hangup",function(){
+            console.log("Click on callmonitor hangup")
+            call_monitor_hangup()
+        })
+    /////////////////////# Call monitor  events ends#///////////////////////////////////////////////#
+        
+        
+        
+        })
+</script>

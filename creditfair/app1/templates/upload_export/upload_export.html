@@ -1,0 +1,156 @@
+{% extends 'base.html'  %}
+{% load static %}
+
+{% block content %}
+{% csrf_token  %}
+<style>
+    .table-wrapper{
+        height:calc(100vh - 383px)
+    }
+    .input_holder{
+        position: relative;
+    }
+    .error__box,.error__box2{
+        position:absolute;
+        bottom: -19px;
+    }
+</style>
+
+<div id="toast-container" class="toast-container"></div>
+
+<form  method="post" id="apr_export_form" style="width:100%">  
+    <input type="hidden" name="username" value="">
+    <input type="hidden" name="apr_fdate" value="">
+    <input type="hidden" name="apr_tdate" value="">
+</form>
+
+<main class="upload_main">
+    <section class="up_exp_section_wrapper">
+        <section class="upload_section_1">
+            <div class="upload_input_wrapper">
+                <div class="csv_icon">
+                    <img src="{% static 'images/csv_icon.svg'  %}" alt="">
+                    <span class="upload_text">Upload Data</span>
+                    <div  class="input_holder">
+                        <div class="select2__wrapper">
+                            <select name="" id="format_select" class="np-select" style="width:100%">
+                                <option value="" selected>Download Format</option>
+                                <option value="creditfair">Format 1</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="input_holder_wrapper">
+                    <div class="input_holder">
+                        <label for=""><span class="starspan">*</span> List ID</label>
+                        <input type="text" name="list_id" id="list_id"  placeholder="Enter List ID">
+                        <div class="error__box"></div>
+                    </div>
+                    <div class="input_holder">
+                        <label for=""><span class="starspan">*</span> List Name</label>
+                        <input type="text" name="list_name" placeholder="Enter List Name">
+                        <div class="error__box2"></div>
+                    </div>
+                </div>
+    
+            </div>
+            <input type="file" id="fileinput" name="excel_file" accept=".csv" hidden/>
+    
+            <div class="upload_file_wrapper" id="drop-area">
+                <div style="text-align: center;"><img src="{% static 'images/upbw.svg'  %}" alt=""></div>
+                <h5 class="drop_text">Drag & drop files or <span class="trigger_input">Browse</span></h5>
+                <p>Supported formats: CSV</p>
+            </div>
+            <div style="text-align: center;">
+                <button id="upload_btn" {% if request.user.user_level == 10 %}disabled="true"{% endif %}>Upload</button>
+            </div>
+        </section>
+        <section class="export_section">
+            <div class="exportdiv">
+                <div class="csv_icon">
+                    <img src="{% static 'images/exup.svg'  %}" alt="">
+                    <span class="upload_text">Export Data</span>
+                </div>
+    
+                
+                <div class="export_date_wrapper">
+                    <div class="filter-wrapper-reminder">
+                        <p class="m-0">From</p>
+                        <div class="date-wrapper">
+                        <svg class="cal__icon" width="18" height="13" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 9V11H4V9H6ZM10 9V11H8V9H10ZM14 9V11H12V9H14ZM16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C0.89 20 0 19.1 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H3V0H5V2H13V0H15V2H16ZM16 18V7H2V18H16ZM6 13V15H4V13H6ZM10 13V15H8V13H10ZM14 13V15H12V13H14Z" fill="#575757"/>
+                            </svg>
+                        <input type="text" class="datepick" name="fdate" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="filter-wrapper-reminder" >
+                        <p class="m-0">To</p>
+                        <div class="date-wrapper">
+                        <svg class="cal__icon" width="18" height="13" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 9V11H4V9H6ZM10 9V11H8V9H10ZM14 9V11H12V9H14ZM16 2C16.5304 2 17.0391 2.21071 17.4142 2.58579C17.7893 2.96086 18 3.46957 18 4V18C18 18.5304 17.7893 19.0391 17.4142 19.4142C17.0391 19.7893 16.5304 20 16 20H2C0.89 20 0 19.1 0 18V4C0 3.46957 0.210714 2.96086 0.585786 2.58579C0.960859 2.21071 1.46957 2 2 2H3V0H5V2H13V0H15V2H16ZM16 18V7H2V18H16ZM6 13V15H4V13H6ZM10 13V15H8V13H10ZM14 13V15H12V13H14Z" fill="#575757"/>
+                        </svg>
+                        <input type="text" class="datepick" name="todate" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="exfil" >
+                    <div class="supsel exsel">
+                        <div class="dtitle">Select Report Type</div>
+                            <div class="upsdiv">
+                                <select name="apr_report_export" class="ups np-select" style="width: 100%;">
+                                    <option value="">Select</option>
+                                    <option value="apr">APR Report</option>
+                                    <option value="single">Leadwise Report</option>
+                                    <option value="multi">Export Call Report</option>
+                                </select>
+                                <span class="error" id="campion-error"></span>
+                            </div>
+                        </div>
+                        <div class="supsel exsel">
+                            <div class="dtitle">Select Process</div>
+                            <div class="upsdiv">
+                                <select name="process_sel" class="ups np-select" style="width: 100%;">
+                                    <option value="all">All</option>
+                                    <option value="in">Inbound</option>
+                                    <option value="out">Outbound</option>
+                                </select>
+                                <span class="error" id="campion-error"></span>
+                            </div>
+                        </div>
+                
+                </div>
+        
+                <div class="exbtndiv" style="text-align: center;">
+                    <button type="button" id="export_btn">Export</button>
+                </div>
+            </div>
+        </section>
+    </section>
+    <section>
+        <div class="table-wrapper table-responsive">
+            <table class="table table-borderless rounded">
+                <thead class="sticky-top">
+                    <tr>
+                        <th scope="col">List id</th>
+                        <th scope="col">Entry date</th>
+                        <th scope="col">List name</th>
+                        <th scope="col">File</th>
+                        <th scope="col">Data count</th>
+                        <th scope="col">Uplaaded Count</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>  
+                
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+
+{% include 'upload_export/upload_export_ajax.html'  %}
+    
+
+{% endblock content  %}

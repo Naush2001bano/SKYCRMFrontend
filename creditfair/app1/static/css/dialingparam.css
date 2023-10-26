@@ -1,0 +1,329 @@
+
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .main-dialing-param{
+      width: min(100% - 2em);
+      margin: 22px auto;
+      height: calc(100vh - 6em);
+    }
+    .progressve-filter_wrapper{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        width: min(100% - 2em);
+        margin: auto;
+        margin-bottom: 20px;
+        column-gap: 21px;
+        row-gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .data-count-div{
+        background-color: #ffffff;
+        box-shadow: 0px 0px 4px rgb(0 0 0 / 25%);
+        border-radius: 8px;
+        height: 70px;
+        display: flex;
+        text-align: center;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+    }
+    .startstop-btn{
+        background-image: linear-gradient(to right, #00d2ff 0%, #3a7bd5 51%, #00d2ff 100%);
+        margin: 10px;
+        padding: 8px 22px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: 0.5s;
+        background-size: 200% auto;
+        color: white;
+        box-shadow: 0 0 20px #eee;
+        border-radius: 10px;
+        border: 0;
+        font-size: 15px;
+    }
+    .startstop-btn:hover{
+        background-position: right center; /* change the direction of the change here */
+        color: #fff;
+        text-decoration: none;
+    }
+    .stop-btn{
+        background-image: linear-gradient(to right, #e53935 0%, #e35d5b  51%, #e53935  100%);
+    }
+
+             
+    .filter-submit{
+      background: #047BD5;
+      border-radius: 5px;
+      font-family: 'Roboto';
+      font-weight: 500;
+      font-size: 10px;
+      border: none;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 5px 10px;
+    }
+   
+    .filter-submit-div{
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      gap: 10px;
+    }
+             
+    
+     
+    .card-div{
+      width: 100%;
+      height: 150px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 4px rgb(0 0 0 / 25%);
+      display: grid;
+      padding: 0 8px;
+      position: relative;
+    }
+    .transformCss{
+      transform: scale(1.1);
+    }
+    .onlyRead{
+      pointer-events: none;
+    }
+
+    .loaderoverlay{
+      position: absolute;
+      width: 100%;
+      place-items: center;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: inherit;
+      display: none;
+      z-index: 99;
+    }
+
+    .visibleloader{
+      display: grid;
+    }
+
+    .next-btn{
+      font-size: 12px;
+      color: #ffffff;
+      background-color: #047BD5;
+      padding: 8px;
+      border-radius: 50%;
+    
+    }
+
+    .prev-btn{
+      font-size: 12px;
+      color: #ffffff;
+      background-color: #047BD5;
+      padding: 8px;
+      border-radius: 50%;
+     
+    }
+    
+    .select2-wrapper{
+        width: 100%;
+        margin: auto;
+    }
+    .select2-wrapper > div{
+      width: 100%;
+    }
+    .filter-wrapper-dialingparam{
+      column-gap: 9px;
+      margin: unset;
+    }
+    .sort-by-wrapper{
+      width: 100%;
+      position: relative;
+    }
+    .filter-by-wrapper .filter-by_icon {
+      top: 11px;
+      right: 12px;
+    }
+    .sort-by_icon {
+      position: absolute;
+      z-index: 12;
+      top: 7px;
+    }
+    .multiselect {
+      width: 100%;
+      position: relative;
+    }
+    .card-about{
+      margin: auto;
+    }
+    .card-about > span{
+      color: #047BD5;
+    }
+    .add_filters{
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(93.44deg, #084EBC -10.49%, #084EBC 40.55%, #3C8FDD 99.47%);
+        border-radius: 8px;
+        font-family: "Roboto";
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
+        color: white;
+    }
+    .clear_filters{
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(93.44deg, #084EBC -10.49%, #084EBC 40.55%, #3C8FDD 99.47%);
+        border-radius: 8px;
+        font-family: "Roboto";
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
+        color: white;
+    }
+    .find_listid{
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(93.44deg, #084EBC -10.49%, #084EBC 40.55%, #3C8FDD 99.47%);
+      border-radius: 8px;
+      font-family: "Roboto";
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      color: white;
+    }
+    input{
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      border: none;
+      font-family: 'Roboto';
+      width: 100%;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.1px;
+      color: #047BD5;
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+
+    
+
+    .table-wrapper{
+      margin-top: 15px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: overlay;
+      height: calc(100vh - 22em);
+      filter: drop-shadow(0px 3px 9px rgba(167, 167, 167, 0.35));
+    }
+
+    .table > thead {
+        background-color: #E4F3FF;
+    }
+
+    .table>:not(:last-child)>:last-child>* {
+        vertical-align: middle;
+    }
+
+    .table thead>tr>th {
+        text-align: center;
+        padding-left: 40px;
+        font-size: 11px;
+    }
+
+    .table thead>tr>th {
+      font-family: 'Roboto';
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: #047BD5;
+      vertical-align: bottom;
+      border-bottom: 0px solid hsl(0, 0%, 87%);
+      text-align: center;
+    }
+
+    .table tbody>tr>td {
+      text-align: center;
+      font-family: 'Roboto';
+      font-weight: 400;
+      font-size: 11px;
+    }
+    
+    /* toggle switch  */
+
+
+    h1 {
+            color: green;
+        }
+               
+        /* toggle in label designing */
+        .toggle p{
+          display: flex;
+          justify-content: center;
+          margin-top: 11px;
+        }
+        .toggle {
+            position : relative ;
+            display : inline-block;
+            width : 100px;
+            height : 52px;
+            background-color: red;
+            border-radius: 30px;
+            border: 2px solid gray;
+        }
+               
+        /* After slide changes */
+        .toggle:after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: gray;
+            top: 0px;
+            left: 0px;
+            transition:  all 0.5s;
+        }
+               
+        /* Toggle text */
+        
+               
+        /* Checkbox checked effect */
+        .start-stop-checkbox:checked + .toggle::after {
+            left : 49px;
+        }
+               
+        /* Checkbox checked toggle label bg color */
+        .start-stop-checkbox:checked + .toggle {
+            background-color: green;
+        }
+               
+        /* Checkbox vanished */
+        .start-stop-checkbox {
+            display : none;
+        }
+
+        .drp-buttons .cancelBtn,.applyBtn {
+          display: none;
+        }
+
+
+        .custom-loader {
+          width:50px;
+          height:50px;
+          border-radius:50%;
+          border:8px solid;
+          border-color:#E4E4ED;
+          border-right-color: #766DF4;
+          animation:s2 1s infinite linear;
+          position: absolute;
+        }
+        @keyframes s2 {to{transform: rotate(1turn)}}
+
+    
+

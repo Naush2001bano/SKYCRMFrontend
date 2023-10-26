@@ -1,0 +1,148 @@
+<script>
+  function isNumber(evt) {
+    evt = evt ? evt : window.event;
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
+    }
+    return true;
+  }
+
+  const capitalize = function (name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
+  const generateRowHTML = (className, contentArray) => {
+    const imgTag =
+      '<img src="/static/images/attachment1.svg" height="18px" width="18px">';
+
+    const hrefAttribute =
+      className !== "dnd"
+        ? `href="/cms?id=${contentArray[0]}&render=search"`
+        : "";
+
+    return `
+    <a class="content_type ${className}" ${
+      className !== "dnd" && "s"
+    } ${hrefAttribute} >
+      <span class="search_content ${className}">${
+      className === "dnd" ? "DNC" : capitalize(className)
+    }</span>
+      ${contentArray
+        .slice(1)
+        .map((content) => `<span class="search_content">${content}</span>`)
+        .join("")}
+      <span class="search_content">${imgTag}</span>
+    </a>`;
+  };
+  const rowTypes = {
+    attempted: {
+      className: "attempted",
+      dataFields: [],
+    },
+    "non-attempted": {
+      className: "non-attempted",
+      dataFields: [],
+    },
+    dnd: {
+      className: "dnd",
+      dataFields: [],
+    },
+  };
+
+  
+  async function search_now() {
+    console.log( 'usert')
+    var searchData = $("#searchinput").val();
+    try {
+      const token = localStorage.getItem('token');
+      $(".loader__wrapper").css({ display: "block" });
+
+      console.log(searchData, "dhdkjf")
+      const response = await fetch("http://127.0.0.1:8001/sajax", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({ name: searchData }),
+
+      });
+
+
+      
+      if (!response.ok) {
+        console.error("Request failed with status: " + response.status);
+        return;
+      }
+
+      const result = await response.json();
+      console.log(result, 'resplonseeeeeeeeee')
+      const datass = result.all_data
+      console.log(datass,'datatatatatatta')
+      const tableBody = $(".table_body");
+      if (datass){
+        tableBody.html(" ");
+      }
+      let rowTypes_key;
+      for (const i of datass) {
+        rowTypes_key = i.attempted === 0 ? "non-attempted" : "attempted";
+        if (i.dnd_detail === "1") {
+          rowTypes_key = "dnd";
+        }
+
+        const { className, dataFields } = rowTypes[rowTypes_key];
+
+        tableBody.append(
+            generateRowHTML(className, [
+              i.id,
+              i.list_id,
+              i.name,
+              i.mobile_no,
+              i.agreement_no,
+              i.agreement_id,
+            ])
+        );
+
+      }
+      $(".loader__wrapper").css({ display: "none" });
+    } catch (err) {
+      console.log(err);
+      $(".loader__wrapper").css({ display: "none" });
+    }
+  
+  }
+
+
+  function setsess() {
+    localStorage.setItem("bn", $('input[name="name"]').val());
+    localStorage.setItem("mn", $('input[name="mobile_number"]').val());
+    localStorage.setItem("ld", $('input[name="agreement_no"]').val());
+  }
+
+  function getsess() {
+    let abn = localStorage.getItem("bn");
+    let amn = localStorage.getItem("mn");
+    let ald = localStorage.getItem("ld");
+    $('input[name="name"]').val(abn);
+    $('input[name="mobile_number"]').val(amn);
+    $('input[name="agreement_no"]').val(ald);
+    console.log(abn, amn, ald);
+  }
+
+  $(document).ready(function () {
+
+    $(".header-title").html("Search");
+
+    $(".sa").addClass("active-page");
+    getsess();
+    $(".searchbtn").click(function () {
+      console.log($('input[name="name"]').val(), "input");
+      setsess();
+      search_now();
+    });
+
+    search_now();
+  });
+</script>
